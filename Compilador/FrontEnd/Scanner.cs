@@ -22,7 +22,6 @@ namespace Compilador.FrontEnd
                 }
             }
 
-            //Console.Write(Word.TokenName);
 
         }
 

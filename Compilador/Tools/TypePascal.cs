@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Collections;
+using System.Reflection;
 
 namespace Compilador.Tools
 {
@@ -27,8 +28,8 @@ namespace Compilador.Tools
             KEYWORDS_TOKEN = new Dictionary<string, string>();
             String word;
 
-            using (Stream arquivo = File.Open("keywords.txt", FileMode.Open))
-            using (TextReader leitor = new StreamReader(arquivo))
+            Assembly _assembly = Assembly.GetExecutingAssembly();//adicionando Recurso
+            using (TextReader leitor = new StreamReader(_assembly.GetManifestResourceStream("Compilador.Resource.keywords.txt")) )
             {
                 word = leitor.ReadLine();
                 while (word != null)

@@ -13,7 +13,7 @@ namespace Compilador
         static void Main(string[] args)
         {
 
-            new Scanner("texto.txt");
+            new Scanner(args[0]);
 
 
             Console.ReadKey();
