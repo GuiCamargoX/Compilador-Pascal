@@ -30,7 +30,9 @@ namespace Compilador.FrontEnd {
         //                              FUNCOES 
         //=================================================================================
 
-        //=================================const
+        //=================================
+        //      const
+        //=================================
         private bool const(){
             aux = nT();
             if(aux.TokenType == "string"){
@@ -45,7 +47,9 @@ namespace Compilador.FrontEnd {
                 return false;
             }
         }
-        //===============================sitype
+        //===============================
+        //      sitype
+        //=================================
         private bool sitype(){
             aux = nT();
             if(aux.TokenType == "tyiden"){
@@ -66,18 +70,58 @@ namespace Compilador.FrontEnd {
             }
         }
 
-        //==================================type
+        //=================================
+        //      type
+        //=================================
         private bool type(){
-
+            aux = nT();
+            if(aux.TokenValue == "arrowUp"){
+                if(nT().TokenType != "tyiden") return false;
+                return true;
+            }
+            while(aux.TokenValue == "packed"){
+                aux = nT();
+            }
+            if(aux.TokenValue == "array"){
+                if(nT().TokenValue!="[") return false;
+                do {
+                    if(!sitype()) return false;
+                    aux = nT();
+                }while(aux.TokenValue == ",");
+                if(aux.TokenValue !="]") return false;
+                if(nT().TokenValue != "of") return false;
+                if(!type()) return false;
+                return true;
+            }
+            if(aux.TokenValue == "file"){
+                if(nT().TokenValue != "of") return false;
+                if(!type()) return false;
+                return true;
+            }
+            if(aux.TokenValue == "set"){
+                if(nT().TokenValue != "of") return false;
+                if(!sitype()) return false;
+            }
+            if(aux.TokenValue == "record"){
+                if(!filist()) return false;
+                if(nT().TokenValue != "end") return false;
+            }
+            voltaUm();
+            if(!sitype()) return false;
+            return true;
             
         }
 
-        //===============================filist
+        //=================================
+        //      filist
+        //=================================
         private bool filist(){
             
         }
 
-        //================================infipo
+        //=================================
+        //      infipo
+        //=================================
         private bool infipo(){
             do {
                 aux = nT();
@@ -95,12 +139,69 @@ namespace Compilador.FrontEnd {
             return true;
         }
 
-        //=================================factor
+        //=================================
+        //      factor
+        //=================================
         private bool factor(){
-           
+            aux = nT();
+            if(aux.TokenType == "coiden"){
+                return true;
+            }
+            if(aux.TokenType == "numb"){
+                return true;
+            }
+            if(aux.TokenValue == "nil"){
+                return true;
+            }
+            if(aux.TokenType == "string"){
+                return true
+            }
+            if(aux.TokenType == "vaiden"){
+                if(!infipo()) return false;
+                return true;
+            }
+            if(aux.TokenType == "fuiden"){
+                aux = nT();
+                if(aux.TokenValue == "lambda") return true;
+                if(aux.TokenValue != "(") return false;
+                do {
+                    if(!expr()) return false;
+                    aux = nT();
+                }while(aux.TokenValue == ",");
+                if(aux.TokenValue != ")") return false;
+                return true;
+            }
+            if(aux.TokenValue == "{"){
+                if(!expr()) reutnr false;
+                if(nT().TokenValue != "}") return false;
+                return true;
+            }
+            if(aux.TokenValue == "not"){
+                if(!factor()) return false;
+                return true;
+            }
+            if(aux.TokenValue == "["){
+                if(nT().TokenValue == "]"){
+                    return true;
+                }
+                voltaUm();
+                do{
+                    if(!expr())return false;
+                    aux = nT();
+                    if(aux.TokenValue == ".."){
+                        if(!expr()) return false;
+                        aux = nT();
+                    }
+                }while(aux.TokenValue == ",");
+                if(aux.TokenValue != "]")return false;
+                return true;
+            }
+            return false;
         }
     
-        //=================================term
+        //=================================
+        //      term
+        //=================================
         private bool term(){
             do{
                 if(!factor()) return false;
@@ -116,7 +217,9 @@ namespace Compilador.FrontEnd {
             
         }
 
-        //=================================siexpr
+        //=================================
+        //      siexpr
+        //=================================
         private bool siexpr(){
             aux = nT();
             if(aux.TokenValue == "+" || aux.TokenValue == "-"){
@@ -134,7 +237,9 @@ namespace Compilador.FrontEnd {
             }
         }
 
-        //================================expr
+        //=================================
+        //      expr
+        //=================================
         private bool expr(){
             if(!siexpr()) return false;
             aux = nT();
@@ -155,22 +260,51 @@ namespace Compilador.FrontEnd {
             return true;
         }
 
-        //=================================palist
+        //=================================
+        //      palist
+        //=================================
         private bool palist(){
-            
+            if(nT().TokenValue == "("){
+                do {
+                    aux = nT();
+                    if(aux.TokenValue == "proc"){
+                        do{
+                            if(nT().TokenType !="identifier") return false;
+                            aux1 = nT();
+                        }while (aux1.TokenValue == ",");
+                    }else{
+                        if(aux.TokenValue == "identifier") voltaUm();
+                        do {
+                            if(nT().TokenType != "identifier") return false;
+                            aux1 = nT();
+                        }while(aux1.TokenValue == ",");
+                        if(aux1.TokenValue != ":") return false;
+                        if(nT().TokenType != "tyiden");
+                    }
+                    aux = nT();
+                }while(aux.TokenValue == ";");
+                if(aux.TokenValue != ")") return false;
+            }
+            return true;
         }
 
-        //=================================block
+        //=================================
+        //      block
+        //=================================
         private bool block(){
 
         }
 
-        //==================================statm
+        //=================================
+        //      statm
+        //=================================
         private bool statm(){
             
         }
 
-        //==================================prog
+        //=================================
+        //      prog
+        //=================================
         private bool prog(){   
             if(nT().TokenValue != "program") return false;
             if(nT().TokenType !="identifier") return false;
@@ -191,10 +325,6 @@ namespace Compilador.FrontEnd {
             return true;
         }
 
-        //==================================block
-        private bool block(){
-            
-        }
     //======================================================================================================
     //                                          FIM FUNCOES
     //======================================================================================================
