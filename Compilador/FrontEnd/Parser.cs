@@ -13,7 +13,7 @@ namespace Compilador.FrontEnd {
 
         public bool parseCode() {
             //Funcao inicial que chama o primeiro n� do grafo
-            return f00();
+            return progrm();
         }
 
         public void voltaUm(){
@@ -116,6 +116,7 @@ namespace Compilador.FrontEnd {
         //      filist
         //=================================
         private bool filist(){
+            
             
         }
 
@@ -292,14 +293,200 @@ namespace Compilador.FrontEnd {
         //      block
         //=================================
         private bool block(){
-
+            aux = nT(0;)
+            while(aux.TokenValue != "begin"){
+                if(aux.TokenValue == "label"){
+                    do{
+                        if(nT().TokenType != "numb") return false;
+                        aux = nT();
+                    }while(aux.TokenValue == ",");
+                    if(aux.TokenValue != ";") return false;
+                }
+                if(aux.TokenValue == "const"){
+                    if(nT().TokenType != "identifier") return false;
+                    do{
+                        if(nT().TokenValue != "=") return false;
+                        if(!const()) return false;
+                        if(nT().TokenValue != ";") return false;
+                    }while(nT().TokenType == "identifier");
+                    voltaUm();
+                }
+                if(aux.TokenValue == "type"){
+                    if(nT().TokenType != "identifier") return false;
+                    do {
+                        if(nT().TokenValue != "=") return false;
+                        if(!type()) return false;
+                        if(nT().TokenValue != ";") return false;
+                    }while(nT().TokenType == "identifier");
+                    voltaUm();
+                }
+                if(aux.TokenValue == "var"){
+                    if(nT().TokenType != "identifier") return false;
+                    while(true){
+                        aux = nT();
+                        if(aux.TokenValue == ","){
+                            if(nT().TokenType!="identifier") return false;
+                        }
+                        if(aux.TokenValue == ":"){
+                            if(!type()) return false;
+                            if(nT().TokenValue != ";") return false;
+                            if(nT().TokenType !="identifier"){
+                                voltaUm();
+                                break;
+                            }
+                        }
+                        if(aux.TokenValue !=";" && aux.TokenValue !=",") return false;
+                    }
+                }
+                if(aux.TokenValue == "proc"){
+                    if(nT().TokenType != "identifier") return false;
+                    if(!palist()) return false;
+                    if(nT().TokenValue != ";") return false;
+                    if(!block()) return false;
+                    if(nT().TokenValue != ";");
+                }
+                if(aux.TokenValue == "func"){
+                    if(nT().TokenType != "identifier") return false;
+                    if(!palist()) return false;
+                    if(nT().TokenValue != ":") return false;
+                    if(nT().TokenType != "tyiden") return false;
+                    if(nT().TokenValue != ";") return false;
+                    if(!block()) return false;
+                    if(nT().TokenValue != ";");
+                }
+                aux = nT();
+            }
+            do{
+                if(!statm()) return false;
+                aux = nT();
+            }while(aux.TokenValue == ",");
+            if(aux.TokenValue != "end") return false;
+            return true;
         }
 
         //=================================
         //      statm
         //=================================
         private bool statm(){
-            
+            aux = nT();
+            while(aux.TokenType == "numb"){
+                if(nT().TokenValue != ":") return false;
+                aux = nT();
+            }
+            if(aux.TokenType == "vaiden"){
+                if(!infipo()) return false;
+                if(nT().TokenValue != ":=") return false;
+                if(!expr()) return false;
+                return true;
+            }
+            if(aux.TokenType == "fuiden"){
+                if(nT().TokenValue != ":=") return false;
+                if(!expr()) return false;
+                return true;
+            }
+            if(aux.TokenType == "priden"){
+                aux = nT();
+                if(aux.TokenValue == "lambda") return true;
+                if(aux.TokenValue != "(") return false;
+                do{
+                    if(nT().TokenType != "priden"){
+                        voltaUm();
+                        if(!expr()) return false;
+                    }
+                    aux = nT();
+                }while(aux.TokenValue == ",");
+                if(aux.TokenValue != ")") return false;
+                return true;
+            }
+            if(aux.TokenValue == "begin"){
+                do {
+                    if(!statm()) return false;
+                    aux = nT();
+                }while(aux.TokenValue == ";");
+                if(aux.TokenValue != "end") return false;
+                return true;
+            }
+            if(aux.TokenValue == "if"){
+                if(!expr()) return false;
+                if(nT().TokenValue != "then") return false;
+                if(!statm()) return false;
+                aux = nT();
+                if(aux.TokenValue == "lambda") return true;
+                if(aux.TokenValue != "else") return false;
+                if(!statm()) return false;
+                if(nT().TokenValue != "lambda") return false;
+                return true;
+            }
+            if(aux.TokenValue == "case"){
+                if(!expr()) return false;
+                if(nT().TokenValue != "of") return false;
+                do {
+                    aux = nT();
+                    if(aux.TokenType == "string" || aux.TokenType == "coiden" || aux.TokenType == "numb" ){
+                        aux = nT();
+                        if(aux.TokenValue == ":"){
+                            if(!statm()) return false;
+                            aux = nT();
+                            if(aux.TokenValue == "end") return true;
+                            if(aux.TokenValue != ";") return false;
+                        }else
+                        if(aux.TokenValue != ",") return false;
+                    }
+                    if(aux.TokenValue == "+" ||aux.TokenValue == "-"){
+                        aux = nT();
+                        if(aux.TokenType != "coiden" && aux.TokenType != "numb") return false;
+                        aux = nT();
+                        if(aux.TokenValue == ":"){
+                            if(!statm()) return false;
+                            aux = nT();
+                            if(aux.TokenValue == "end") return true;
+                            if(aux.TokenValue != ";") return false;
+                        }else
+                        if(aux.TokenValue != ",") return false;
+                    }
+                }while(true);
+            }
+            if(aux.TokenValue == "while"){
+                if(!expr()) return false;
+                if(nT().TokenValue != "do") return false;
+                if(!statm()) return false;
+            }
+            if(aux.TokenValue == "repeat"){
+                do{
+                    if(!statm()) return false;
+                    aux = nT();
+                }while(aux.TokenValue != ";");
+                if(aux.TokenValue != "until") return false;
+                if(!expr()) return false;
+                return true;
+            }
+            if(aux.TokenValue == "for"){
+                if(nT().TokenType != "vaiden") return false;
+                if(!infipo()) return false;
+                if(nT().TokenValue != ":=") return false;
+                if(!expr()) return false;
+                aux = nT();
+                if(aux.TokenValue != "to" && aux.TokenValue != "downto") return false;
+                if(!expr()) return false;
+                if(nT().TokenValue != "do") return false;
+                if(!statm()) return false;
+                return true;
+            }
+            if(aux.TokenValue == "with"){
+                do{
+                    if(nT().TokenType != "vaiden") return false;
+                    if(!infipo()) return false;
+                    aux = nT();
+                }while(aux.TokenValue == ",");
+                if(aux.TokenValue != "do") return false;
+                if(!statm()) return false;
+                return true;
+            }
+            if(aux.TokenValue == "goto"){
+                if(nT().TokenType != "numb") return false;
+                return true;
+            }
+            return false;
         }
 
         //=================================
