@@ -5,19 +5,25 @@ using Compilador.Tools;
 
 namespace Compilador.FrontEnd {
     class Parser {
-        
+        private int index;
+
         public String nT() {
             //nextToken
             //Leria o proximo item da tokenArrayList
+            Token t = new Token();
+            t = tokenArrayList(index);
+            index ++;
+            return t;
         }
 
         public bool parseCode() {
-            //Funcao inicial que chama o primeiro n� do grafo
+            //Funcao inicial que chama o primeiro no do grafo
             return progrm();
         }
 
         public void voltaUm(){
             //em alguns casos é necessário voltar na leitura dos tokens
+            this.index --;
         }
 
 
@@ -116,7 +122,54 @@ namespace Compilador.FrontEnd {
         //      filist
         //=================================
         private bool filist(){
-            
+            do{
+                aux = nT();
+                if(aux.TokenType == "identifier"){
+                    aux = nT();
+                    if(aux.TokenValue == ":"){
+                        if(!type()) return false;
+                        aux = nT();
+                    }else{
+                        if(aux.TokenValue != ",") return false;
+                    }
+                }else 
+                if(aux.TokenValue != ";"){
+                    if(aux.TokenValue == "case" || aux.TokenValue == "lambda"){
+                        break;
+                    }
+                    return false;
+                }
+            }while(true);
+            if(aux.TokenValue == "lambda") return true;
+
+            if(aux.TokenValue != "case") return false;
+            aux = nT();
+            if(aux.TokenType == "identifier"){
+                if(nT().TokenValue != ":") return false;
+                aux = nT();
+            }
+            if(aux.TokenValue != "lambda") return false;
+            if(nT().TokenType != "tyiden") return false;
+            if(nT().TokenValue != "of") return false;
+
+            do{
+                aux = nT();
+                if(aux.TokenValue == "lambda") return true;
+                if(aux.TokenValue == "+" || aux.TokenValue == "-"){
+                    aux = nT();
+                    if(aux.TokenType != "coiden" && aux.TokenType != "numb") return false;
+                }
+                aux = nT();
+                if(aux.TokenValue == ":"){
+                    if(nT().TokenValue != "(") return false;
+                    if(!filist()) return false;
+                    if(nT().TokenValue != ")") return false;
+                    aux = nT();
+                    if(aux.TokenValue == "lambda") return true;
+                    if(aux.TokenValue != ";") return false;
+                }else
+                if(aux.TokenValue != ",") return false;
+            }while (true);
             
         }
 
