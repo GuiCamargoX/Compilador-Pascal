@@ -6,6 +6,17 @@ using Compilador.Tools;
 namespace Compilador.FrontEnd {
     class Parser {
         private int index;
+    
+        //Construtor
+        public Parser(){
+
+            if(parseCode()){
+                Console.WriteLine("Aceito");
+            }else{
+                Console.WriteLine("Erro");
+            }
+            
+        }
 
         public String nT() {
             //nextToken
@@ -33,7 +44,7 @@ namespace Compilador.FrontEnd {
 
 
         //=================================================================================
-        //                              FUNCOES 
+        //                              FUNCOES GRAFO
         //=================================================================================
 
         //=================================

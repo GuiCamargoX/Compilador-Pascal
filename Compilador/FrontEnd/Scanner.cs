@@ -7,7 +7,7 @@ namespace Compilador.FrontEnd
 {
     class Scanner
     {
-        private static List<Token> tokenArrayList = new List<Token>();
+        public static List<Token> tokenArrayList = new List<Token>();
 
         public Scanner(String namePath) {
       
@@ -21,7 +21,7 @@ namespace Compilador.FrontEnd
                     CheckCharacter(ch[i]);
                 }
             }
-
+            Parser p = new Parser();
 
         }
 
