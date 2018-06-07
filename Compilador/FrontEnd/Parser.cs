@@ -6,6 +6,7 @@ using Compilador.Tools;
 namespace Compilador.FrontEnd {
     class Parser {
         private int index;
+        private Token aux;
     
         //Construtor
         public Parser(){
@@ -22,7 +23,7 @@ namespace Compilador.FrontEnd {
             //nextToken
             //Leria o proximo item da tokenArrayList
             Token t = new Token();
-            t = tokenArrayList(index);
+            t = tokenArrayList(this.index);
             index ++;
             return t;
         }
@@ -332,7 +333,7 @@ namespace Compilador.FrontEnd {
             if(nT().TokenValue == "("){
                 do {
                     aux = nT();
-                    if(aux.TokenValue == "proc"){
+                    if(aux.TokenValue == "procedure"){
                         do{
                             if(nT().TokenType !="identifier") return false;
                             aux1 = nT();
@@ -402,14 +403,14 @@ namespace Compilador.FrontEnd {
                         if(aux.TokenValue !=";" && aux.TokenValue !=",") return false;
                     }
                 }
-                if(aux.TokenValue == "proc"){
+                if(aux.TokenValue == "procedure"){
                     if(nT().TokenType != "identifier") return false;
                     if(!palist()) return false;
                     if(nT().TokenValue != ";") return false;
                     if(!block()) return false;
                     if(nT().TokenValue != ";");
                 }
-                if(aux.TokenValue == "func"){
+                if(aux.TokenValue == "procedure"){
                     if(nT().TokenType != "identifier") return false;
                     if(!palist()) return false;
                     if(nT().TokenValue != ":") return false;
