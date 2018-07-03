@@ -12,6 +12,7 @@ namespace Compilador.FrontEnd
         {
             I, R, B, C, S, P, L, A     // integer, real, boolean, char, string, procedure, label, array
         }
+        private static System.IO.StreamWriter file;
 
         private static Dictionary<String, TYPE> STRING_TYPE_HASH_MAP;
 
@@ -41,7 +42,10 @@ namespace Compilador.FrontEnd
 
         public static Byte[] parse()
         {
+            openFileOutput();
+
             getToken(); // Get initial token
+
 
             match("TK_PROGRAM");
             match("TK_IDENTIFIER");
@@ -68,6 +72,12 @@ namespace Compilador.FrontEnd
             return byteArray;
         }
 
+        private static void openFileOutput()
+        {
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("Mepa.txt"))
+            {
+            }
+        }
 
         public static string block()
         {
@@ -114,16 +124,16 @@ namespace Compilador.FrontEnd
                 switch (currentToken.TokenType)
                 {
                     case "TK_GOTO":
-                        goToStat();
+                        /*goToStat();*/
                         break;
                     case "TK_WHILE":
-                        whileStat();
+                        /*whileStat();*/
                         break;
                     case "TK_IF":
                         ifStat();
                         break;
                     case "TK_WRITELN":
-                        writeStat();
+                        /*writeStat();*/
                         break;
                     case "TK_IDENTIFIER":
                         Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
@@ -137,7 +147,7 @@ namespace Compilador.FrontEnd
                         assignmentStat();
                         break;
                     case "TK_A_PROC":
-                        procedureStat();
+                        /*procedureStat();*/
                         break;
                     case "TK_SEMI_COLON":
                         match("TK_SEMI_COLON");
@@ -148,6 +158,28 @@ namespace Compilador.FrontEnd
             }
 
         }
+
+        public static void assignmentStat()
+        {
+            Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
+
+            if (symbol != null)
+            {
+                TYPE lhsType = symbol.getDataType();
+                int lhsAddress = symbol.getAddress();
+
+                match("TK_A_VAR");
+
+                match("TK_ASSIGNMENT");
+
+                Expressao();
+
+                GenerateMepa( "","ARMZ",symbol.nivel_corrente+","+ symbol.getAddress().ToString() );
+            }
+
+
+        }
+
 
         public static void ifStat()
         {
@@ -452,7 +484,7 @@ namespace Compilador.FrontEnd
 
 
         public static void GenerateMepa(string label , string code, string par1) {
-
+            file.WriteLine(label + " "+ code + " " + par1);
         }
 
         public static void Next_Label(string l) {
