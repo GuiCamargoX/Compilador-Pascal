@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Compilador.FrontEnd
 {
-    class Token
+    public class Token
     {
         public string TokenType
         { get; private set; }

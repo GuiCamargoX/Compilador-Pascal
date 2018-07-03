@@ -42,6 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrontEnd\Parser.cs" />
+    <Compile Include="FrontEnd\ParserAux.cs" />
+    <Compile Include="FrontEnd\Symbol.cs" />
+    <Compile Include="FrontEnd\SymbolTable.cs" />
     <Compile Include="FrontEnd\Word.cs" />
     <Compile Include="FrontEnd\Scanner.cs" />
     <Compile Include="FrontEnd\Token.cs" />

@@ -17,12 +17,19 @@ namespace Compilador.FrontEnd
 
                 for (int i = 0; i < ch.Length; i++)
                 {
-                    char p = ch[i];
                     CheckCharacter(ch[i]);
                 }
             }
-            Parser p = new Parser();
 
+        }
+
+        public List<Token> getAnalex() {
+
+            Word.clearStates();
+            Word.TokenName = "EOF";
+            generateToken("TK_EOF");
+
+            return tokenArrayList;
         }
 
         public static void CheckCharacter(char element) {
