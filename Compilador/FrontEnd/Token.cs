@@ -9,7 +9,7 @@ namespace Compilador.FrontEnd
     public class Token
     {
         public string TokenType
-        { get; private set; }
+        { get; set; }
 
 
         public string TokenValue { get; private set; } = ""; //==lexema

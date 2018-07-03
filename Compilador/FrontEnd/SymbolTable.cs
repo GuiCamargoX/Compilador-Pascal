@@ -17,10 +17,12 @@ namespace Compilador.FrontEnd
         }
 
         private static Scope headerScope = new Scope();
+        public static int nivel_corrente{ get; private set; } = 0;
 
         public static void Insere(Symbol symbol)
         {
             int hashValue = hash(symbol.getName());
+            symbol.nivel_corrente = nivel_corrente;
 
             Symbol bucketCursor = headerScope.symbolTable[hashValue];
             if (bucketCursor == null)
@@ -81,6 +83,8 @@ namespace Compilador.FrontEnd
         {
             Scope innerScope = new Scope();
 
+            nivel_corrente++;
+
             // Add new scope to the headerScope
             innerScope.next = headerScope;
 
@@ -91,6 +95,7 @@ namespace Compilador.FrontEnd
         public static void closeScope()
         {
             headerScope = headerScope.next;
+            nivel_corrente--;
         }
 
         public static Scope getHeaderScope()

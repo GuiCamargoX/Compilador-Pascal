@@ -11,6 +11,7 @@ namespace Compilador.FrontEnd
         private String name = "";
         private String tokenType = "";
         private Parser.TYPE dataType = 0;
+        public int nivel_corrente;
         private int address;
         private int returnAddress; // return address for procedure
 
