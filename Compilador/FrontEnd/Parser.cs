@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,8 @@ namespace Compilador.FrontEnd
         {
             I, R, B, C, S, P, L, A     // integer, real, boolean, char, string, procedure, label, array
         }
-        private static System.IO.StreamWriter file;
+        private static StreamWriter file=null;
+        private static Stream saida=null;
 
         private static Dictionary<String, TYPE> STRING_TYPE_HASH_MAP;
 
@@ -62,29 +64,36 @@ namespace Compilador.FrontEnd
             match("TK_SEMI_COLON");
 
             GenerateMepa("","INPP","");
-
+          
             block();
-
 
             match("TK_DOT");
             match("TK_EOF");
+
+           
+            file.Close();
+            saida.Close();
 
             return byteArray;
         }
 
         private static void openFileOutput()
         {
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter("Mepa.txt"))
+            try
             {
+                saida = File.Open("Mepa.txt", FileMode.Create);
+                file = new StreamWriter(saida);
             }
+            catch (Exception ex) { }
+
         }
 
         public static string block()
         {
             string n = null;
 
-            if( "TK_LABEL".Equals(currentToken.TokenType) )
-                /*n = labelDeclarations();*/
+            /*if( "TK_LABEL".Equals(currentToken.TokenType) )
+                n = labelDeclarations();*/
                 
             if("TK_VAR".Equals( currentToken.TokenType ) )
                 n = VarDeclarations();
@@ -127,7 +136,7 @@ namespace Compilador.FrontEnd
                         /*goToStat();*/
                         break;
                     case "TK_WHILE":
-                        /*whileStat();*/
+                        whileStat();
                         break;
                     case "TK_IF":
                         ifStat();
@@ -159,6 +168,25 @@ namespace Compilador.FrontEnd
 
         }
 
+        public static void whileStat()
+        {
+            String l1 = null, l2 = null;
+            l1 = Next_Label();
+
+            match("TK_WHILE");
+            GenerateMepa(l1, "NADA", "");
+            Expressao();
+            match("TK_DO");
+
+            l2 = Next_Label();
+            GenerateMepa("", "DSVF", l2);
+
+            statements();
+
+            GenerateMepa("", "DSVS", l1);
+            GenerateMepa(l2, "NADA", "");
+        }
+
         public static void assignmentStat()
         {
             Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
@@ -184,7 +212,7 @@ namespace Compilador.FrontEnd
         public static void ifStat()
         {
             string l1 = null , l2=null;
-            Next_Label(l1);
+            l1 = Next_Label();
 
             match("TK_IF");
             Expressao();
@@ -196,7 +224,7 @@ namespace Compilador.FrontEnd
 
             if (currentToken.TokenType.Equals("TK_ELSE"))
             {
-                Next_Label(l2);
+                l2 = Next_Label();
                 GenerateMepa("", "DSVS", l2);
                 GenerateMepa(l1, "NADA", "");
                 match("TK_ELSE");
@@ -457,8 +485,8 @@ namespace Compilador.FrontEnd
                 match("TK_SEMI_COLON");
 
                 // generate hole to jump past the body
-                Next_Label(l1);
-                Next_Label(l2);
+                l1= Next_Label();
+                l2= Next_Label();
                 GenerateMepa("","DSVS",l1);
 
                 Encoding u8 = Encoding.UTF8;
@@ -487,9 +515,10 @@ namespace Compilador.FrontEnd
             file.WriteLine(label + " "+ code + " " + par1);
         }
 
-        public static void Next_Label(string l) {
-            l = "L" + qte_label;
+        public static string Next_Label() {
+            string l = "L" + qte_label;
             qte_label++;
+            return l;
         }
 
         public static void getToken()

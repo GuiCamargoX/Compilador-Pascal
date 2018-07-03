@@ -7,7 +7,8 @@ using Compilador.Tools;
 namespace Compilador.FrontEnd
 {
     class ParserAux
-    {
+    { }
+}/*
         private int index;
         private Token aux;
 
@@ -698,5 +699,4 @@ private bool prog()
     //                                          FIM FUNCOES
     //======================================================================================================
 
-
-    }
+    */
