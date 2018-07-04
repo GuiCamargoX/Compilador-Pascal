@@ -139,7 +139,7 @@ namespace Compilador.FrontEnd
           switch (currentToken.TokenType)
             {
                     case "TK_GOTO":
-                        /*goToStat();*/
+                        goToStat();
                         break;
                     case "TK_WHILE":
                         whileStat();
@@ -169,8 +169,19 @@ namespace Compilador.FrontEnd
                         return;
                 }
         }
+        public static void goToStat()
+        {
+            Symbol symbol;
 
-        public static void repeatStat() {
+            match("TK_GOTO");
+            symbol = SymbolTable.Busca(currentToken.TokenValue);
+            //precisa por o rotulo do simbolo, o nivel do simbolo e o nivel atual como parametros
+            GenerateMepa("", "DSVR", "symbol.getRotulo.toString()" + "," + "symbol.nivel_corrente.ToString()" + "," + "nivelatual");
+
+
+        }
+        public static void repeatStat() 
+        {
             String l1 = null, l2 = null;
 
             l1 = Next_Label();
@@ -514,8 +525,11 @@ namespace Compilador.FrontEnd
                     labelsArrayList.Add(currentToken);
 
                     match("TK_A_LABEL");
-
-                    if ("TK_COMMA".Equals(currentToken.TokenType))
+                    String l1 = null;
+                    l1 = Next_Label();
+                    GenerateMepa(l1,"ENRT", "nivelatual" + "," + "nvariaveislocais"); //Posição ao qual o GOTO TEM QUE SE REFERIR através de L1
+                    //Precisa guardar esse 11 e esse  nivel atual junto com o numero da label na tabela    
+                if ("TK_COMMA".Equals(currentToken.TokenType))
                     {
                         match("TK_COMMA");
                     }
