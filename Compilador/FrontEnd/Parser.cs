@@ -138,6 +138,9 @@ namespace Compilador.FrontEnd
                     case "TK_WHILE":
                         whileStat();
                         break;
+                    case "TK_FOR":
+                        forStat();
+                        break;
                     case "TK_IF":
                         ifStat();
                         break;
@@ -187,6 +190,38 @@ namespace Compilador.FrontEnd
             GenerateMepa(l2, "NADA", "");
         }
 
+        public static void forStat()
+        {
+            String l1 = null, l2 = null;
+            l1=Next_Label();
+            l2=Next_Label();
+
+            match("TK_FOR");
+            statements(); //ex k:=1
+            GenerateMepa("", "ARMZ", "/*nivel,0*/");
+            GenerateMepa(l2,"NADA","");
+            match("TK_TO");
+            Expressao();//ex" 3
+            GenerateMepa("","CRVL", "/*nivel, 0*/");
+            GenerateMepa("","CMEG","");
+            GenerateMepa("","DSVF",l1);
+
+            //Faz o que é pedido dentro do begin-end
+            match("TK_DO");
+            match("TK_BEGIN");
+            statements();
+
+            // K++
+            GenerateMepa("","CRVL", "/*nivel, 0*/");
+            GenerateMepa("","CRCT", "1");
+            GenerateMepa("","SOMA", "");
+
+            GenerateMepa("","DSVS", l2);//volta a ver a condição
+            match("TK_END");
+            GenerateMepa(l1, "NADA", ""); //Saiu do for
+
+        }
+
         public static void assignmentStat()
         {
             Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
@@ -208,6 +243,23 @@ namespace Compilador.FrontEnd
 
         }
 
+        public static void writeStat()  
+        {
+            match("TK_WRITELN");
+            Expressao();
+            //A expressão deixará no topo da pilha o que será escrito
+            GenerateMepa("","IMPR","");
+        }
+
+        /* Creio que funcione assim
+        public static void writeStat()  
+        {
+            match("TK_READ");
+            Expressao();
+            //A expressão deixará no topo da pilha onde será escrito
+            GenerateMepa("","LEIT","");
+        }
+        */
 
         public static void ifStat()
         {
@@ -250,7 +302,29 @@ namespace Compilador.FrontEnd
                 String pred = currentToken.TokenType;
                 match(pred);
                 ExpressaoSimples();
-
+                //Depois que os valores das expressões da esquerda e direita estiverem na pilha
+                //devemos indicar a operação que se deseja
+                switch(pred)
+                {
+                    case "TK_LESS_THAN":
+                        GenerateMepa("","CMME","");
+                    break;
+                    case "TK_GREATER_THAN":
+                        GenerateMepa("","CMMA","");
+                    break;
+                    case "TK_LESS_THAN_EQUAL":
+                        GenerateMepa("","CMEG","");
+                    break;
+                    case "TK_GREATER_THAN_EQUAL":
+                        GenerateMepa("","CMAG","");
+                    break;
+                    case "TK_EQUAL":
+                        GenerateMepa("","CMIG","");
+                    break;
+                    case "TK_NOT_EQUAL":
+                        GenerateMepa("","CMDG","");
+                    break;
+                }
               
             }
 
@@ -263,6 +337,18 @@ namespace Compilador.FrontEnd
                 String op = currentToken.TokenType;
                 match(op);
                 Termo();
+                switch(op)
+                {
+                    case "TK_PLUS":
+                        GenerateMepa("","SOMA","");
+                        break;
+                    case "TK_MINUS":
+                        GenerateMepa("","SUBT","");
+                        break;
+                    case "TK_OR":
+                        GenerateMepa("","DISJ","");
+                        break;
+                }
             }
 
         }
