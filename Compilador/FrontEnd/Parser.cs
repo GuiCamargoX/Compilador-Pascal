@@ -138,6 +138,9 @@ namespace Compilador.FrontEnd
         {
           switch (currentToken.TokenType)
             {
+                    case "TK_CASE":
+                        caseStat();
+                        break;
                     case "TK_GOTO":
                         goToStat();
                         break;
@@ -169,6 +172,65 @@ namespace Compilador.FrontEnd
                         return;
                 }
         }
+        public static void caseStat()
+        {
+            match("TK_CASE");
+            Expressao();
+            match("TK_OF");
+            Symbol coiden;
+            bool doisptovirgula;
+            do
+            {
+                doisptovirgula = false;
+                if("TK_END".Equals(currentToken.TokenType)){
+                    break;
+                }
+                if("TK_SEMI_COLON".Equals(currentToken.TokenType)){
+                    match("TK_SEMI_COLON");
+                }else{
+                    if("TK_INTLIT".Equals(currentToken.TokenType)){
+                        match("TK_INTLIT");
+                        doisptovirgula = true;
+                    }else
+                    if((coiden=SymbolTable.Busca(currentToken.TokenValue))!=null){
+                        match("TK_COIDEN");
+                        doisptovirgula = true;
+                    }else
+                    if("TK_PLUS".Equals(currentToken.TokenType) || "TK_MINUS".Equals(currentToken.TokenType){
+                        doisptovirgula = true;
+                        if("TK_PLUS".Equals(currentToken.TokenType)){
+                            match("TK_PLUS");
+                        }else
+                        if("TK_MINUS".Equals(currentToken.TokenType)){
+                            match("TK_MINUS");
+                        }//else return erro
+                        coiden=SymbolTable.Busca(currentToken.TokenValue);
+                        if(coiden!=null){
+                            match("TK_COIDEN");
+                        }else
+                        if("TK_INTLIT".Equals(currentToken.TokenValue)){
+                            match("TK_INTLIT");
+                        }
+                    }
+
+                    if(doisptovirgula){
+                        if("TK_COLON".Equals(currentToken.TokenType)){
+                            match("TK_COLON");
+                            statements();
+                            if("TK_END".Equals(currentToken.TokenType)){
+                                match("TK_END");
+                                break;
+                            }else match("TK_SEMI_COLON");
+                        }else match("TK_COMMA");
+                    }
+                }
+                
+            }while(true);
+
+
+        }
+
+
         public static void goToStat()
         {
             Symbol symbol;
