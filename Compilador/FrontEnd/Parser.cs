@@ -144,6 +144,9 @@ namespace Compilador.FrontEnd
                     case "TK_WHILE":
                         whileStat();
                         break;
+                    case "TK_REPEAT":
+                        repeatStat();
+                        break;
                     case "TK_FOR":
                         forStat();
                         break;
@@ -165,6 +168,28 @@ namespace Compilador.FrontEnd
                     default:
                         return;
                 }
+        }
+
+        public static void repeatStat() {
+            String l1 = null, l2 = null;
+
+            l1 = Next_Label();
+            l2 = Next_Label();
+
+            match("TK_REPEAT");
+            GenerateMepa(l1,"NADA","");
+
+            statements();
+
+            while ("TK_SEMI_COLON".Equals(currentToken.TokenType)) {
+                match("TK_SEMI_COLON");
+                statements();
+            }
+            match("TK_UNTIL");
+
+            Expressao();
+            GenerateMepa("","DSVF",l1);
+            GenerateMepa(l2,"NADA","");
         }
 
         public static void whileStat()
@@ -285,7 +310,7 @@ namespace Compilador.FrontEnd
             //A expressão deixará no topo da pilha o que será escrito
             GenerateMepa("","IMPR","");
             match("TK_CLOSE_PARENTHESIS");
-            match("TK_SEMI_COLON");
+
         }
 
         /* Creio que funcione assim

@@ -1,4 +1,4 @@
-program (ifElse);
+program ifElse(teste);
 
 var x, y: integer;
 
@@ -7,7 +7,7 @@ begin
     y := 200;
 
     if x < y then
-        writeln(x)
+        x:=2
     else
-        writeln(y);
+        y:=3;
 end.
