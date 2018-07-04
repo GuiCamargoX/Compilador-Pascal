@@ -122,6 +122,13 @@ namespace Compilador.FrontEnd
         {
             match("TK_BEGIN");
             statements();
+
+            while ("TK_SEMI_COLON".Equals(currentToken.TokenType))
+            {
+                match("TK_SEMI_COLON");
+                statements();
+            }
+
             match("TK_END");
 
             if (Int32.Parse(n) > 0)
@@ -163,8 +170,8 @@ namespace Compilador.FrontEnd
                     case "TK_A_PROC":
                         /*procedureStat();*/
                         break;
-                    case "TK_SEMI_COLON":
-                        match("TK_SEMI_COLON");
+                    case "TK_BEGIN":
+                        comando_composto("0");
                         break;
                     default:
                         return;
