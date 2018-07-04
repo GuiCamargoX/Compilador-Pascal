@@ -92,33 +92,32 @@ namespace Compilador.FrontEnd
         {
             string n = null;
 
-            if( "TK_LABEL".Equals(currentToken.TokenType) )
-                labelDeclarations();
-                
-            if("TK_VAR".Equals( currentToken.TokenType ) )
-                n = VarDeclarations();
-                   
+            while ( !"TK_BEGIN".Equals(currentToken.TokenType) ) {
 
-            while ("TK_PROCEDURE".Equals(currentToken.TokenType) || "TK_FUNCTION".Equals(currentToken.TokenType)) {
-                switch (currentToken.TokenType) {
+                switch ( currentToken.TokenType ) {
+
+                    case "TK_LABEL":
+                        labelDeclarations();
+                        break;
+
+                    case "TK_VAR":
+                        n = VarDeclarations();
+                        break;
 
                     case "TK_PROCEDURE":
                         procDeclaration();
                         break;
-
-                    case "TK_FUNCTION":
-                        /*funcDeclaration();*/
-                        break;
+                    
                 }
+                
             }
 
-            if("TK_BEGIN".Equals( currentToken.TokenType ) )
-                comando_composto(n);
+            comando_Begin(n);
 
             return n;
         }
 
-        public static void comando_composto(string n)
+        public static void comando_Begin(string n)
         {
             match("TK_BEGIN");
             statements();
@@ -161,7 +160,7 @@ namespace Compilador.FrontEnd
                         /*procedureStat();*/
                         break;
                     case "TK_BEGIN":
-                        comando_composto("0");
+                        comando_Begin("0");
                         break;
                     default:
                         return;
@@ -593,6 +592,7 @@ namespace Compilador.FrontEnd
                 String procedureName = currentToken.TokenValue;
 
                 match("TK_A_PROC");
+                palist();/*parametros formais*/
                 match("TK_SEMI_COLON");
 
                 // generate hole to jump past the body
@@ -619,6 +619,56 @@ namespace Compilador.FrontEnd
                 GenerateMepa(l1, "NADA","");
                 SymbolTable.closeScope();
             }
+        }
+
+        public static void palist() {
+            bool loop= true;
+
+            if (!"TK_OPEN_PARENTHESIS".Equals(currentToken.TokenType))
+                return;
+
+            match("TK_OPEN_PARENTHESIS");
+
+            do
+            {
+                if ("TK_PROCEDURE".Equals(currentToken.TokenType))
+                {
+                    match("TK_PROCEDURE");
+                    match("TK_IDENTIFIER");
+                    while ("TK_COMMA".Equals(currentToken.TokenType))
+                    {
+                        match("TK_COMMA");
+                        match("TK_IDENTIFIER");
+                    }
+
+                }
+
+                if ("TK_VAR".Equals(currentToken.TokenType) || "TK_FUNCTION".Equals(currentToken.TokenType))
+                {
+                    string type = currentToken.TokenType;
+                    match(type);
+
+                    match("TK_IDENTIFIER");
+                    while ("TK_COMMA".Equals(currentToken.TokenType))
+                    {
+                        match("TK_COMMA");
+                        match("TK_IDENTIFIER");
+                    }
+                    match("TK_COLON");
+                    match("TK_IDENTIFIER");
+                }
+
+                if ("TK_SEMI_COLON".Equals(currentToken.TokenType)){
+                    match("TK_SEMI_COLON");
+                }
+                else{
+                    loop = false;
+                }
+
+            } while (loop);
+
+            match("TK_CLOSE_PARENTHESIS");
+
         }
 
 
