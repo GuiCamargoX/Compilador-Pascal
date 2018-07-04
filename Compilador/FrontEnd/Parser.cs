@@ -92,8 +92,8 @@ namespace Compilador.FrontEnd
         {
             string n = null;
 
-            /*if( "TK_LABEL".Equals(currentToken.TokenType) )
-                n = labelDeclarations();*/
+            if( "TK_LABEL".Equals(currentToken.TokenType) )
+                labelDeclarations();
                 
             if("TK_VAR".Equals( currentToken.TokenType ) )
                 n = VarDeclarations();
@@ -137,10 +137,8 @@ namespace Compilador.FrontEnd
 
         public static void statements()
         {
-            while (!currentToken.TokenType.Equals("TK_END"))
+          switch (currentToken.TokenType)
             {
-                switch (currentToken.TokenType)
-                {
                     case "TK_GOTO":
                         /*goToStat();*/
                         break;
@@ -156,15 +154,7 @@ namespace Compilador.FrontEnd
                     case "TK_WRITELN":
                         writeStat();
                         break;
-                    case "TK_IDENTIFIER":
-                        Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
-                        if (symbol != null)
-                        {
-                            // assign token type to be var, proc, or label
-                            currentToken.TokenType = symbol.getTokenType();
-                        }
-                        break;
-                    case "TK_A_VAR":
+                    case "TK_VAIDEN":
                         assignmentStat();
                         break;
                     case "TK_A_PROC":
@@ -176,8 +166,6 @@ namespace Compilador.FrontEnd
                     default:
                         return;
                 }
-            }
-
         }
 
         public static void whileStat()
@@ -236,24 +224,45 @@ namespace Compilador.FrontEnd
 
         }
 
+        public static void infipo() {
+
+            while ("TK_OPEN_SQUARE_BRACKET".Equals(currentToken.TokenType) || "TK_DOT".Equals(currentToken.TokenType)) {
+                switch (currentToken.TokenType) {
+                    case "TK_OPEN_SQUARE_BRACKET":
+                        match("TK_OPEN_SQUARE_BRACKET");
+                        Expressao();
+
+                        while ("TK_COMMA".Equals(currentToken.TokenType))
+                        {
+                            match("TK_COMMA");
+                            Expressao();
+                        }
+
+                        match("TK_CLOSE_SQUARE_BRACKET");
+                     break;
+
+                    case "TK_DOT":
+                        match("FIIDEN");
+                    break;
+                }
+            }
+
+        }
+
         public static void assignmentStat()
         {
             Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
+            infipo();
+
+            match("TK_VAIDEN");
+            match("TK_ASSIGNMENT");
+
+            Expressao();
 
             if (symbol != null)
             {
-                TYPE lhsType = symbol.getDataType();
-                int lhsAddress = symbol.getAddress();
-
-                match("TK_A_VAR");
-
-                match("TK_ASSIGNMENT");
-
-                Expressao();
-
                 GenerateMepa( "","ARMZ",symbol.nivel_corrente+","+ symbol.getAddress().ToString() );
             }
-
 
         }
 
@@ -266,13 +275,13 @@ namespace Compilador.FrontEnd
 
             symbol = SymbolTable.Busca(currentToken.TokenValue);
             GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
-            match("TK_IDENTIFIER");
+            match("TK_VAIDEN");
 
             while ("TK_COMMA".Equals(currentToken.TokenType)) {
                 match("TK_COMMA");
                 symbol = SymbolTable.Busca(currentToken.TokenValue);
                 GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
-                match("TK_IDENTIFIER");
+                match("TK_VAIDEN");
             }
             //A expressão deixará no topo da pilha o que será escrito
             GenerateMepa("","IMPR","");
@@ -417,25 +426,12 @@ namespace Compilador.FrontEnd
         {
             switch (currentToken.TokenType)
             {
-                case "TK_IDENTIFIER":
+                case "TK_VAIDEN":
                     Symbol symbol = SymbolTable.Busca(currentToken.TokenValue );
-                    if (symbol != null)
-                    {
-                        if (symbol.getTokenType().Equals("TK_A_VAR"))
-                        {
-                            // variable
-                            currentToken.TokenType = "TK_A_VAR";
-
-                            GenerateMepa("","CRVL", symbol.nivel_corrente.ToString()+","+ symbol.getAddress().ToString() );
-
-                            match("TK_A_VAR");
-                        }
-
-                    }
-                    else
-                    {
-                        throw new Exception(String.Format("Symbol not found (%s)", currentToken.TokenValue));
-                    }
+                    infipo();
+                    GenerateMepa("","CRVL", symbol.nivel_corrente.ToString()+","+ symbol.getAddress().ToString() );
+                    match("TK_VAIDEN");
+                  
                     break;
 
                 case "TK_INTLIT":
@@ -488,7 +484,7 @@ namespace Compilador.FrontEnd
                 // Store labels in a list
                 List<Token> labelsArrayList = new List<Token>();
 
-                while ("TK_IDENTIFIER".Equals(currentToken.TokenType))
+                while ("TK_INTLIT".Equals(currentToken.TokenType))
                 {
                     currentToken.TokenType = "TK_A_LABEL";
                     labelsArrayList.Add(currentToken);
@@ -542,10 +538,10 @@ namespace Compilador.FrontEnd
 
                 while ("TK_IDENTIFIER".Equals(currentToken.TokenType))
                 {
-                    currentToken.TokenType = "TK_A_VAR";
+                    currentToken.TokenType = "TK_VAIDEN";
                     variablesArrayList.Add(currentToken);
 
-                    match("TK_A_VAR");
+                    match("TK_VAIDEN");
 
                     if ("TK_COMMA".Equals(currentToken.TokenType))
                     {
@@ -562,7 +558,7 @@ namespace Compilador.FrontEnd
                 {
 
                     Symbol symbol = new Symbol(var.TokenValue,
-                            "TK_A_VAR",
+                            "TK_VAIDEN",
                             STRING_TYPE_HASH_MAP[ dataType.ToLower().Substring(3) ], 
                             dp);
 
@@ -638,9 +634,15 @@ namespace Compilador.FrontEnd
 
         public static void getToken()
         {
+            Symbol symb;
+
             if (it.MoveNext())
             {
                 currentToken = it.Current;
+
+                symb = SymbolTable.Busca( currentToken.TokenValue );
+                if (symb != null)
+                    currentToken.TokenType = symb.getTokenType();
             }
         }
 
