@@ -123,7 +123,9 @@ namespace Compilador.FrontEnd
             match("TK_BEGIN");
             statements();
             match("TK_END");
-            GenerateMepa("", "DMEM", n);
+
+            if (Int32.Parse(n) > 0)
+                GenerateMepa("", "DMEM", n);
         }
 
         public static void statements()
@@ -145,7 +147,7 @@ namespace Compilador.FrontEnd
                         ifStat();
                         break;
                     case "TK_WRITELN":
-                        /*writeStat();*/
+                        writeStat();
                         break;
                     case "TK_IDENTIFIER":
                         Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
@@ -193,31 +195,36 @@ namespace Compilador.FrontEnd
         public static void forStat()
         {
             String l1 = null, l2 = null;
-            l1=Next_Label();
+            Symbol vaiden;
+            l1 =Next_Label();
             l2=Next_Label();
 
             match("TK_FOR");
+            vaiden = SymbolTable.Busca(currentToken.TokenValue);/*guardando o simbolo da variavel k*/
             statements(); //ex k:=1
-            GenerateMepa("", "ARMZ", "/*nivel,0*/");
             GenerateMepa(l2,"NADA","");
+            GenerateMepa("", "CRVL", vaiden.nivel_corrente + "," + vaiden.getAddress());
             match("TK_TO");
             Expressao();//ex" 3
-            GenerateMepa("","CRVL", "/*nivel, 0*/");
+           
             GenerateMepa("","CMEG","");
             GenerateMepa("","DSVF",l1);
 
             //Faz o que é pedido dentro do begin-end
             match("TK_DO");
+            SymbolTable.openScope();
             match("TK_BEGIN");
             statements();
 
             // K++
-            GenerateMepa("","CRVL", "/*nivel, 0*/");
+            GenerateMepa("","CRVL", vaiden.nivel_corrente+","+ vaiden.getAddress() );
             GenerateMepa("","CRCT", "1");
             GenerateMepa("","SOMA", "");
-
+            GenerateMepa("", "ARMZ", vaiden.nivel_corrente + "," + vaiden.getAddress());
             GenerateMepa("","DSVS", l2);//volta a ver a condição
+
             match("TK_END");
+            SymbolTable.closeScope();
             GenerateMepa(l1, "NADA", ""); //Saiu do for
 
         }
@@ -245,10 +252,25 @@ namespace Compilador.FrontEnd
 
         public static void writeStat()  
         {
+            Symbol symbol;
+
             match("TK_WRITELN");
-            Expressao();
+            match("TK_OPEN_PARENTHESIS");
+
+            symbol = SymbolTable.Busca(currentToken.TokenValue);
+            GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
+            match("TK_IDENTIFIER");
+
+            while ("TK_COMMA".Equals(currentToken.TokenType)) {
+                match("TK_COMMA");
+                symbol = SymbolTable.Busca(currentToken.TokenValue);
+                GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
+                match("TK_IDENTIFIER");
+            }
             //A expressão deixará no topo da pilha o que será escrito
             GenerateMepa("","IMPR","");
+            match("TK_CLOSE_PARENTHESIS");
+            match("TK_SEMI_COLON");
         }
 
         /* Creio que funcione assim

@@ -46,11 +46,12 @@ namespace Compilador.FrontEnd
         public static Symbol Busca(String symbolName)
         {
             int hashValue = hash(symbolName);
-            Symbol bucketCursor = headerScope.symbolTable[hashValue];
             Scope scopeCursor = headerScope;
+            Symbol bucketCursor;
 
             while (scopeCursor != null)
             {
+                bucketCursor = scopeCursor.symbolTable[hashValue];
                 while (bucketCursor != null)
                 {
                     if (bucketCursor.getName().Equals(symbolName))
