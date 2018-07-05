@@ -18,6 +18,7 @@ namespace Compilador.FrontEnd
 
         private static Scope headerScope = new Scope();
         public static int nivel_corrente{ get; private set; } = 0;
+        private static string[] QteVarScope = new string[100] ;
 
         public static void Insere(Symbol symbol)
         {
@@ -85,6 +86,7 @@ namespace Compilador.FrontEnd
             Scope innerScope = new Scope();
 
             nivel_corrente++;
+            QteVarScope[nivel_corrente] = "0";
 
             // Add new scope to the headerScope
             innerScope.next = headerScope;
@@ -103,5 +105,14 @@ namespace Compilador.FrontEnd
         {
             return headerScope;
         }
+
+        public static void setQteVariaveis(string n) {
+            QteVarScope[nivel_corrente] = n; 
+        }
+
+        public static string getQteVariaveis() {
+            return QteVarScope[nivel_corrente];
+        }
+
     }
 }

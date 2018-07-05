@@ -88,9 +88,8 @@ namespace Compilador.FrontEnd
 
         }
 
-        public static string block()
+        public static void block()
         {
-            string n = null;
 
             while ( !"TK_BEGIN".Equals(currentToken.TokenType) ) {
 
@@ -101,7 +100,7 @@ namespace Compilador.FrontEnd
                         break;
 
                     case "TK_VAR":
-                        n = VarDeclarations();
+                        VarDeclarations();
                         break;
 
                     case "TK_PROCEDURE":
@@ -112,12 +111,11 @@ namespace Compilador.FrontEnd
                 
             }
 
-            comando_Begin(n);
+            comando_Begin();
 
-            return n;
         }
 
-        public static void comando_Begin(string n)
+        public static void comando_Begin()
         {
             match("TK_BEGIN");
             statements();
@@ -130,14 +128,14 @@ namespace Compilador.FrontEnd
 
             match("TK_END");
 
-            if (Int32.Parse(n) > 0)
-                GenerateMepa("", "DMEM", n);
+            if (Int32.Parse( SymbolTable.getQteVariaveis() ) > 0)
+                GenerateMepa("", "DMEM", SymbolTable.getQteVariaveis() );
         }
 
         public static void statements()
         {
-          switch (currentToken.TokenType)
-            {
+                switch (currentToken.TokenType)
+                {
                     case "TK_CASE":
                         caseStat();
                         break;
@@ -165,71 +163,86 @@ namespace Compilador.FrontEnd
                     case "TK_A_PROC":
                         /*procedureStat();*/
                         break;
+                    case "TK_A_LABEL":
+                        labelStat();
+                        break;
                     case "TK_BEGIN":
-                        comando_Begin("0");
+                        comando_Begin();
                         break;
                     default:
                         return;
                 }
         }
-        public static void caseStat()
-        {
-            match("TK_CASE");
-            Expressao();
-            match("TK_OF");
-            Symbol coiden;
-            bool doisptovirgula;
-            do
-            {
-                doisptovirgula = false;
-                if("TK_END".Equals(currentToken.TokenType)){
-                    break;
-                }
-                if("TK_SEMI_COLON".Equals(currentToken.TokenType)){
-                    match("TK_SEMI_COLON");
-                }else{
-                    if("TK_INTLIT".Equals(currentToken.TokenType)){
-                        match("TK_INTLIT");
-                        doisptovirgula = true;
-                    }else
-                    if((coiden=SymbolTable.Busca(currentToken.TokenValue))!=null){
-                        match("TK_COIDEN");
-                        doisptovirgula = true;
-                    }else
-                    if("TK_PLUS".Equals(currentToken.TokenType) || "TK_MINUS".Equals(currentToken.TokenType){
-                        doisptovirgula = true;
-                        if("TK_PLUS".Equals(currentToken.TokenType)){
-                            match("TK_PLUS");
-                        }else
-                        if("TK_MINUS".Equals(currentToken.TokenType)){
-                            match("TK_MINUS");
-                        }//else return erro
-                        coiden=SymbolTable.Busca(currentToken.TokenValue);
-                        if(coiden!=null){
-                            match("TK_COIDEN");
-                        }else
-                        if("TK_INTLIT".Equals(currentToken.TokenValue)){
-                            match("TK_INTLIT");
-                        }
-                    }
 
-                    if(doisptovirgula){
-                        if("TK_COLON".Equals(currentToken.TokenType)){
-                            match("TK_COLON");
-                            statements();
-                            if("TK_END".Equals(currentToken.TokenType)){
-                                match("TK_END");
-                                break;
-                            }else match("TK_SEMI_COLON");
-                        }else match("TK_COMMA");
-                    }
-                }
-                
-            }while(true);
+        public static void labelStat() {
 
+            Symbol symbol = SymbolTable.Busca( currentToken.TokenValue );
 
+            Encoding u8 = Encoding.UTF8;
+            byte[] bytes = BitConverter.GetBytes( symbol.getAddress() );
+            string l1 = u8.GetString(bytes);
+
+            symbol.nivel_corrente = SymbolTable.nivel_corrente;
+
+            GenerateMepa(l1.Trim(), "ENRT", symbol.nivel_corrente + "," + SymbolTable.getQteVariaveis()); //Posição ao qual o GOTO TEM QUE SE REFERIR através de L1
+                                                                                                   //Precisa guardar esse 11 e esse  nivel atual junto com o numero da label na tabela   
+            match("TK_A_LABEL");
+            match("TK_COLON");
+            statements();
         }
 
+        public static void caseStat()
+        {
+            Symbol exp;
+            String l1 = null;
+            match("TK_CASE");
+            exp = SymbolTable.Busca(currentToken.TokenValue);
+            int valor;
+            Expressao();
+            match("TK_OF");
+            l1 = Next_Label();
+            do
+            {
+                GenerateMepa(l1, "NADA", "");
+                l1 = Next_Label();
+                if ("TK_END".Equals(currentToken.TokenType))
+                {
+                    match("TK_END");
+                    break;
+                }
+                if ("TK_SEMI_COLON".Equals(currentToken.TokenType))
+                {
+                    match("TK_SEMI_COLON");
+                }
+                else
+                {
+                    valor = currentToken.TokenValue;
+                    match("TK_INTLIT");
+
+                    if ("TK_COLON".Equals(currentToken.TokenType))
+                    {
+                        GenerateMepa("", "CRVL", exp.nivel_corrente + "," + exp.getAddress());
+                        GenerateMepa("", "CRCT", valor);
+                        GenerateMepa("", "CMIG", "");
+                        GenerateMepa("", "DSVF", l1);
+                        statments();
+                        if ("TK_END".Equals(currentToken.TokenType))
+                        {
+                            match("TK_END");
+                            break;
+                        }
+                        else
+                        {
+                            match("TK_SEMI_COLON");
+                        }
+                    }
+                    match("TK_COMMA");
+                }
+            }
+
+            GenerateMepa(l1, "NADA", "");
+
+        }
 
         public static void goToStat()
         {
@@ -237,11 +250,17 @@ namespace Compilador.FrontEnd
 
             match("TK_GOTO");
             symbol = SymbolTable.Busca(currentToken.TokenValue);
+
+            Encoding u8 = Encoding.UTF8;
+            byte[] bytes = BitConverter.GetBytes(symbol.getAddress());
+            string l1 = u8.GetString(bytes);
+
             //precisa por o rotulo do simbolo, o nivel do simbolo e o nivel atual como parametros
-            GenerateMepa("", "DSVR", "symbol.getRotulo.toString()" + "," + "symbol.nivel_corrente.ToString()" + "," + "nivelatual");
+            GenerateMepa("", "DSVR", l1 + "," + symbol.nivel_corrente + "," + SymbolTable.nivel_corrente );
 
-
+            match("TK_A_LABEL");
         }
+
         public static void repeatStat() 
         {
             String l1 = null, l2 = null;
@@ -587,10 +606,7 @@ namespace Compilador.FrontEnd
                     labelsArrayList.Add(currentToken);
 
                     match("TK_A_LABEL");
-                    String l1 = null;
-                    l1 = Next_Label();
-                    GenerateMepa(l1,"ENRT", "nivelatual" + "," + "nvariaveislocais"); //Posição ao qual o GOTO TEM QUE SE REFERIR através de L1
-                    //Precisa guardar esse 11 e esse  nivel atual junto com o numero da label na tabela    
+ 
                 if ("TK_COMMA".Equals(currentToken.TokenType))
                     {
                         match("TK_COMMA");
@@ -600,16 +616,19 @@ namespace Compilador.FrontEnd
                 // insert all labels into SymbolTable
                 foreach (Token label in labelsArrayList)
                 {
+                    String l1 = null;
+                    l1 = Next_Label();
 
-
+                    Encoding u8 = Encoding.UTF8;
                     Symbol symbol = new Symbol(label.TokenValue,
                             "TK_A_LABEL",
                             TYPE.L,
-                            0);
+                            BitConverter.ToInt16(u8.GetBytes(l1),0) );
 
                     if (SymbolTable.Busca(label.TokenValue) == null)
                     {
                         SymbolTable.Insere(symbol);
+                        symbol.nivel_corrente = -1;
                     }
                 }
 
@@ -617,10 +636,9 @@ namespace Compilador.FrontEnd
             }
         }
 
-        public static string VarDeclarations()
+        public static void VarDeclarations()
         {
-            string n = null;
-
+       
             while (true)
             {
                 if ("TK_VAR".Equals(currentToken.TokenType))
@@ -671,13 +689,13 @@ namespace Compilador.FrontEnd
                     }
                 }
 
-                n = variablesArrayList.Count.ToString();
+                SymbolTable.setQteVariaveis( variablesArrayList.Count.ToString() ) ;
                 GenerateMepa( "","AMEM", variablesArrayList.Count.ToString() );
 
                 match("TK_SEMI_COLON");
                 
             }
-            return n;
+          
             
         }
 
@@ -713,10 +731,10 @@ namespace Compilador.FrontEnd
                 }
 
                 // body
-                n = block();
+                block();
 
                 // hole to return the procedure
-                GenerateMepa("", "RTPR", SymbolTable.nivel_corrente.ToString() +","+ n );
+                GenerateMepa("", "RTPR", SymbolTable.nivel_corrente.ToString() +","+ SymbolTable.getQteVariaveis() );
                 GenerateMepa(l1, "NADA","");
                 SymbolTable.closeScope();
             }
