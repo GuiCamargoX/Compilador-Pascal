@@ -92,7 +92,7 @@ namespace Compilador.FrontEnd
         {
 
             while ( !"TK_BEGIN".Equals(currentToken.TokenType) ) {
-
+                Console.Write(currentToken.TokenValue);
                 switch ( currentToken.TokenType ) {
 
                     case "TK_LABEL":
@@ -759,6 +759,7 @@ namespace Compilador.FrontEnd
                 GenerateMepa("", "RTPR", SymbolTable.nivel_corrente.ToString() +","+ SymbolTable.getQteVariaveis() );
                 GenerateMepa(l1, "NADA","");
                 SymbolTable.closeScope();
+                match("TK_SEMI_COLON");
             }
         }
 
