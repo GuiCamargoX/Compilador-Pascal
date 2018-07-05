@@ -321,20 +321,30 @@ namespace Compilador.FrontEnd
         public static void forStat()
         {
             String l1 = null, l2 = null;
+            bool inc = false;
             Symbol vaiden;
-            l1 =Next_Label();
-            l2=Next_Label();
+            l1 = Next_Label();
+            l2 = Next_Label();
 
             match("TK_FOR");
             vaiden = SymbolTable.Busca(currentToken.TokenValue);/*guardando o simbolo da variavel k*/
             statements(); //ex k:=1
-            GenerateMepa(l2,"NADA","");
+            GenerateMepa(l2, "NADA", "");
             GenerateMepa("", "CRVL", vaiden.nivel_corrente + "," + vaiden.getAddress());
-            match("TK_TO");
+
+            if ("TK_TO".Equals(currentToken.TokenType))
+            {
+                match("TK_TO");
+                inc = true;
+            }
+            else
+                if ("TK_DOWNTO".Equals(currentToken.TokenType))
+                match("TK_DOWNTO");
+
             Expressao();//ex" 3
-           
-            GenerateMepa("","CMEG","");
-            GenerateMepa("","DSVF",l1);
+
+            GenerateMepa("", "CMEG", "");
+            GenerateMepa("", "DSVF", l1);
 
             //Faz o que é pedido dentro do begin-end
             match("TK_DO");
@@ -342,25 +352,26 @@ namespace Compilador.FrontEnd
             match("TK_BEGIN");
             statements();
 
-            // K++
-            GenerateMepa("","CRVL", vaiden.nivel_corrente+","+ vaiden.getAddress() );
-            GenerateMepa("","CRCT", "1");
-            GenerateMepa("","SOMA", "");
+            // K++ / K--
+            GenerateMepa("", "CRVL", vaiden.nivel_corrente + "," + vaiden.getAddress());
+            GenerateMepa("", "CRCT", "1");
+
+            if (inc)
+                GenerateMepa("", "SOMA", "");
+            else
+                GenerateMepa("", "SUBT", "");
+
             GenerateMepa("", "ARMZ", vaiden.nivel_corrente + "," + vaiden.getAddress());
-            GenerateMepa("","DSVS", l2);//volta a ver a condição
+            GenerateMepa("", "DSVS", l2);//volta a ver a condição
 
+            match("TK_SEMI_COLON");
 
-            while ("TK_SEMI_COLON".Equals(currentToken.TokenType))
-            {
-                match("TK_SEMI_COLON");
-                statements();
-            }
 
             match("TK_END");
             SymbolTable.closeScope();
             GenerateMepa(l1, "NADA", ""); //Saiu do for
 
-        }
+        } 
 
         public static void infipo() {
 
@@ -744,13 +755,13 @@ namespace Compilador.FrontEnd
                 Encoding u8 = Encoding.UTF8;
                 Symbol symbol = new Symbol(procedureName, "TK_A_PROC", TYPE.P, BitConverter.ToInt16(u8.GetBytes(l2), 0) );
 
-                SymbolTable.openScope();
-                GenerateMepa(l2, "ENPR", SymbolTable.nivel_corrente.ToString() );
-
                 if (SymbolTable.Busca(procedureName) == null)
                 {
                     SymbolTable.Insere(symbol);
                 }
+
+                SymbolTable.openScope();
+                GenerateMepa(l2, "ENPR", SymbolTable.nivel_corrente.ToString() );
 
                 // body
                 block();

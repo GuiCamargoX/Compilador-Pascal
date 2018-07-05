@@ -13,7 +13,7 @@ namespace Compilador
         static void Main(string[] args)
         {
 
-           List<Token> tokenArrayList =  new Scanner("procSemPar.pas").getAnalex() ;
+           List<Token> tokenArrayList =  new Scanner("procedure.pas").getAnalex() ;
 
            Parser.SetTokenArrayListIterator(tokenArrayList);
 
