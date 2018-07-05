@@ -137,7 +137,7 @@ namespace Compilador.FrontEnd
                 switch (currentToken.TokenType)
                 {
                     case "TK_CASE":
-                        /*caseStat();*/
+                       caseStat();
                         break;
                     case "TK_GOTO":
                         goToStat();
@@ -203,13 +203,13 @@ namespace Compilador.FrontEnd
             l1 = Next_Label();
             do
             {
-                GenerateMepa(l1, "NADA", "");
-                l1 = Next_Label();
                 if ("TK_END".Equals(currentToken.TokenType))
                 {
                     match("TK_END");
                     break;
                 }
+                GenerateMepa(l1, "NADA", "");
+                l1 = Next_Label();
                 if ("TK_SEMI_COLON".Equals(currentToken.TokenType))
                 {
                     match("TK_SEMI_COLON");
@@ -221,6 +221,7 @@ namespace Compilador.FrontEnd
 
                     if ("TK_COLON".Equals(currentToken.TokenType))
                     {
+                        match("TK_COLON");
                         GenerateMepa("", "CRVL", exp.nivel_corrente + "," + exp.getAddress());
                         GenerateMepa("", "CRCT", valor);
                         GenerateMepa("", "CMIG", "");
@@ -235,7 +236,7 @@ namespace Compilador.FrontEnd
                         {
                             match("TK_SEMI_COLON");
                         }
-                    }
+                    }else
                     match("TK_COMMA");
                 }
             } while (true);
