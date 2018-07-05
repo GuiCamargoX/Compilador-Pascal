@@ -160,7 +160,7 @@ namespace Compilador.FrontEnd
                         assignmentStat();
                         break;
                     case "TK_A_PROC":
-                        /*procedureStat();*/
+                        procedureStat();
                         break;
                     case "TK_INTLIT":
                         labelStat();
