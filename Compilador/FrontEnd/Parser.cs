@@ -137,7 +137,7 @@ namespace Compilador.FrontEnd
                 switch (currentToken.TokenType)
                 {
                     case "TK_CASE":
-                        caseStat();
+                        /*caseStat();*/
                         break;
                     case "TK_GOTO":
                         goToStat();
@@ -197,7 +197,7 @@ namespace Compilador.FrontEnd
             String l1 = null;
             match("TK_CASE");
             exp = SymbolTable.Busca(currentToken.TokenValue);
-            int valor;
+            String valor;
             Expressao();
             match("TK_OF");
             l1 = Next_Label();
@@ -225,7 +225,7 @@ namespace Compilador.FrontEnd
                         GenerateMepa("", "CRCT", valor);
                         GenerateMepa("", "CMIG", "");
                         GenerateMepa("", "DSVF", l1);
-                        statments();
+                        statements();
                         if ("TK_END".Equals(currentToken.TokenType))
                         {
                             match("TK_END");
@@ -238,7 +238,7 @@ namespace Compilador.FrontEnd
                     }
                     match("TK_COMMA");
                 }
-            }
+            } while (true);
 
             GenerateMepa(l1, "NADA", "");
 
@@ -333,6 +333,13 @@ namespace Compilador.FrontEnd
             GenerateMepa("","SOMA", "");
             GenerateMepa("", "ARMZ", vaiden.nivel_corrente + "," + vaiden.getAddress());
             GenerateMepa("","DSVS", l2);//volta a ver a condição
+
+
+            while ("TK_SEMI_COLON".Equals(currentToken.TokenType))
+            {
+                match("TK_SEMI_COLON");
+                statements();
+            }
 
             match("TK_END");
             SymbolTable.closeScope();

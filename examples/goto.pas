@@ -1,15 +1,19 @@
-program gotoProgram;
-label label1;
-var x: integer;
-
+program exGoto(teste);
+label 1; 
+var a : integer;
 
 begin
-    x := 2;
-    if x = 2 then
-        goto label1;
+   a := 10;
 
-    x := 3;
-
-    label1: writeln(x);
-
+   1: repeat
+      if( a = 15) then
+      
+      begin
+         a := a + 1;
+         goto 1;
+      end;
+      
+      writeln(a);
+      a:= a +1;
+   until a = 20;
 end.
