@@ -153,8 +153,11 @@ namespace Compilador.FrontEnd
                     case "TK_IF":
                         ifStat();
                         break;
-                    case "TK_WRITELN":
+                    case "TK_WRITE":
                         writeStat();
+                        break;
+                    case "TK_READ":
+                        readStat();
                         break;
                     case "TK_VAIDEN":
                         assignmentStat();
@@ -417,20 +420,15 @@ namespace Compilador.FrontEnd
 
         public static void writeStat()  
         {
-            Symbol symbol;
-
-            match("TK_WRITELN");
+            match("TK_WRITE");
             match("TK_OPEN_PARENTHESIS");
 
-            symbol = SymbolTable.Busca(currentToken.TokenValue);
-            GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
-            match("TK_VAIDEN");
+            Expressao();
 
             while ("TK_COMMA".Equals(currentToken.TokenType)) {
                 match("TK_COMMA");
-                symbol = SymbolTable.Busca(currentToken.TokenValue);
-                GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
-                match("TK_VAIDEN");
+                GenerateMepa("", "IMPR", "");
+                Expressao();
             }
             //A expressão deixará no topo da pilha o que será escrito
             GenerateMepa("","IMPR","");
@@ -438,15 +436,30 @@ namespace Compilador.FrontEnd
 
         }
 
-        /* Creio que funcione assim
-        public static void writeStat()  
-        {
+        
+        public static void readStat(){
+            Symbol symbol;
+
             match("TK_READ");
-            Expressao();
-            //A expressão deixará no topo da pilha onde será escrito
-            GenerateMepa("","LEIT","");
+            match("TK_OPEN_PARENTHESIS");
+
+            symbol = SymbolTable.Busca(currentToken.TokenValue);
+            match(symbol.getTokenType());
+            GenerateMepa("", "LEIT", "");
+            GenerateMepa("", "ARMZ", symbol.nivel_corrente + "," + symbol.getAddress().ToString());
+
+            while ("TK_COMMA".Equals(currentToken.TokenType))
+            {
+                match("TK_COMMA");
+                symbol = SymbolTable.Busca(currentToken.TokenValue);
+                match(symbol.getTokenType());
+                GenerateMepa("", "LEIT", "");
+                GenerateMepa("", "ARMZ", symbol.nivel_corrente + "," + symbol.getAddress().ToString());
+            }
+            match("TK_CLOSE_PARENTHESIS");
+
         }
-        */
+
 
         public static void ifStat()
         {
