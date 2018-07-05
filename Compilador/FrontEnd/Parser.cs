@@ -112,6 +112,8 @@ namespace Compilador.FrontEnd
             }
 
             comando_Begin();
+            if (Int32.Parse(SymbolTable.getQteVariaveis()) > 0)
+                GenerateMepa("", "DMEM", SymbolTable.getQteVariaveis());
 
         }
 
@@ -127,9 +129,6 @@ namespace Compilador.FrontEnd
             }
 
             match("TK_END");
-
-            if (Int32.Parse( SymbolTable.getQteVariaveis() ) > 0)
-                GenerateMepa("", "DMEM", SymbolTable.getQteVariaveis() );
         }
 
         public static void statements()
@@ -163,7 +162,7 @@ namespace Compilador.FrontEnd
                     case "TK_A_PROC":
                         /*procedureStat();*/
                         break;
-                    case "TK_A_LABEL":
+                    case "TK_INTLIT":
                         labelStat();
                         break;
                     case "TK_BEGIN":
@@ -172,6 +171,17 @@ namespace Compilador.FrontEnd
                     default:
                         return;
                 }
+        }
+
+        public static void procedureStat()
+        {
+            Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
+            match("TK_A_PROC");
+            Encoding u8 = Encoding.UTF8;
+            byte[] bytes = BitConverter.GetBytes(symbol.getAddress());
+            string l1 = u8.GetString(bytes);
+            GenerateMepa("", "CHPR", l1);
+
         }
 
         public static void labelStat() {
@@ -183,6 +193,7 @@ namespace Compilador.FrontEnd
             string l1 = u8.GetString(bytes);
 
             symbol.nivel_corrente = SymbolTable.nivel_corrente;
+            currentToken.TokenType = symbol.getTokenType();
 
             GenerateMepa(l1.Trim(), "ENRT", symbol.nivel_corrente + "," + SymbolTable.getQteVariaveis()); //Posição ao qual o GOTO TEM QUE SE REFERIR através de L1
                                                                                                    //Precisa guardar esse 11 e esse  nivel atual junto com o numero da label na tabela   
@@ -251,10 +262,13 @@ namespace Compilador.FrontEnd
 
             match("TK_GOTO");
             symbol = SymbolTable.Busca(currentToken.TokenValue);
+            currentToken.TokenType = symbol.getTokenType();
 
             Encoding u8 = Encoding.UTF8;
             byte[] bytes = BitConverter.GetBytes(symbol.getAddress());
             string l1 = u8.GetString(bytes);
+
+            
 
             //precisa por o rotulo do simbolo, o nivel do simbolo e o nivel atual como parametros
             GenerateMepa("", "DSVR", l1 + "," + symbol.nivel_corrente + "," + SymbolTable.nivel_corrente );
@@ -548,45 +562,45 @@ namespace Compilador.FrontEnd
 
         public static void Fator()
         {
-            switch (currentToken.TokenType)
-            {
-                case "TK_VAIDEN":
-                    Symbol symbol = SymbolTable.Busca(currentToken.TokenValue );
-                    infipo();
-                    GenerateMepa("","CRVL", symbol.nivel_corrente.ToString()+","+ symbol.getAddress().ToString() );
-                    match("TK_VAIDEN");
-                  
-                    break;
+                switch (currentToken.TokenType)
+                {
+                    case "TK_VAIDEN":
+                        Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
+                        infipo();
+                        GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
+                        match("TK_VAIDEN");
 
-                case "TK_INTLIT":
-                    GenerateMepa("","CRCT",currentToken.TokenValue);
-                    match("TK_INTLIT");
-                    break;
+                        break;
 
-                case "TK_BOOLLIT":
-                    if( Convert.ToBoolean(currentToken.TokenValue) )
-                        GenerateMepa("", "CRCT", "1");
-                    else
-                        GenerateMepa("", "CRCT", "0");
+                    case "TK_INTLIT":
+                        GenerateMepa("", "CRCT", currentToken.TokenValue);
+                        match("TK_INTLIT");
+                        break;
 
-                    match("TK_BOOLLIT");
-                    break;
+                    case "TK_BOOLLIT":
+                        if (Convert.ToBoolean(currentToken.TokenValue))
+                            GenerateMepa("", "CRCT", "1");
+                        else
+                            GenerateMepa("", "CRCT", "0");
 
-                case "TK_OPEN_PARENTHESIS":
-                    match("TK_OPEN_PARENTHESIS");
-                    Expressao();
-                    match("TK_CLOSE_PARENTHESIS");
-                    break;
+                        match("TK_BOOLLIT");
+                        break;
 
-                case "TK_NOT":
-                    match("TK_NOT");
-                    Fator();
-                    GenerateMepa("","NEGA","");
-                    break;
+                    case "TK_OPEN_PARENTHESIS":
+                        match("TK_OPEN_PARENTHESIS");
+                        Expressao();
+                        match("TK_CLOSE_PARENTHESIS");
+                        break;
 
-                default:
-                    throw new Exception("Unknown data type");
-            }
+                    case "TK_NOT":
+                        match("TK_NOT");
+                        Fator();
+                        GenerateMepa("", "NEGA", "");
+                        break;
+
+                    default:
+                        break;
+                }
 
         }
 
@@ -728,7 +742,7 @@ namespace Compilador.FrontEnd
                 GenerateMepa("","DSVS",l1);
 
                 Encoding u8 = Encoding.UTF8;
-                Symbol symbol = new Symbol(procedureName, "TK_A_PROC", TYPE.P, BitConverter.ToInt32(u8.GetBytes(l2), 0) );
+                Symbol symbol = new Symbol(procedureName, "TK_A_PROC", TYPE.P, BitConverter.ToInt16(u8.GetBytes(l2), 0) );
 
                 SymbolTable.openScope();
                 GenerateMepa(l2, "ENPR", SymbolTable.nivel_corrente.ToString() );
@@ -812,14 +826,18 @@ namespace Compilador.FrontEnd
         public static void getToken()
         {
             Symbol symb;
-
+            
             if (it.MoveNext())
             {
                 currentToken = it.Current;
 
-                symb = SymbolTable.Busca( currentToken.TokenValue );
-                if (symb != null)
-                    currentToken.TokenType = symb.getTokenType();
+                if ("TK_IDENTIFIER".Equals(currentToken.TokenType))
+                {
+                    symb = SymbolTable.Busca(currentToken.TokenValue);
+
+                    if (symb != null)
+                        currentToken.TokenType = symb.getTokenType();
+                }
             }
         }
 

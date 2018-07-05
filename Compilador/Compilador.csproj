@@ -56,6 +56,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Testes\for.pas" />
+    <None Include="Testes\goto.pas" />
     <None Include="Testes\ifElse.pas" />
     <None Include="Testes\repeat.pas" />
     <None Include="Testes\while.pas" />
