@@ -153,8 +153,14 @@ namespace Compilador.FrontEnd
                     case "TK_IF":
                         ifStat();
                         break;
+                    case "TK_WRITELN":
+                        writeStat();
+                        break;
                     case "TK_WRITE":
                         writeStat();
+                        break;
+                    case "TK_READLN":
+                        readStat();
                         break;
                     case "TK_READ":
                         readStat();
@@ -352,7 +358,7 @@ namespace Compilador.FrontEnd
             //Faz o que é pedido dentro do begin-end
             match("TK_DO");
             SymbolTable.openScope();
-            match("TK_BEGIN");
+            
             statements();
 
             // K++ / K--
@@ -367,10 +373,7 @@ namespace Compilador.FrontEnd
             GenerateMepa("", "ARMZ", vaiden.nivel_corrente + "," + vaiden.getAddress());
             GenerateMepa("", "DSVS", l2);//volta a ver a condição
 
-            match("TK_SEMI_COLON");
 
-
-            match("TK_END");
             SymbolTable.closeScope();
             GenerateMepa(l1, "NADA", ""); //Saiu do for
 
@@ -420,7 +423,12 @@ namespace Compilador.FrontEnd
 
         public static void writeStat()  
         {
-            match("TK_WRITE");
+            if("TK_WRITELN".Equals(currentToken.TokenType))
+                match("TK_WRITELN");
+
+            if ("TK_WRITE".Equals(currentToken.TokenType))
+                match("TK_WRITE");
+
             match("TK_OPEN_PARENTHESIS");
 
             Expressao();
@@ -440,7 +448,12 @@ namespace Compilador.FrontEnd
         public static void readStat(){
             Symbol symbol;
 
-            match("TK_READ");
+            if ("TK_READLN".Equals(currentToken.TokenType))
+                match("TK_READLN");
+
+            if ("TK_READ".Equals(currentToken.TokenType))
+                match("TK_READ");
+
             match("TK_OPEN_PARENTHESIS");
 
             symbol = SymbolTable.Busca(currentToken.TokenValue);
@@ -674,7 +687,6 @@ namespace Compilador.FrontEnd
                     if (SymbolTable.Busca(label.TokenValue) == null)
                     {
                         SymbolTable.Insere(symbol);
-                        symbol.nivel_corrente = -1;
                     }
                 }
 
