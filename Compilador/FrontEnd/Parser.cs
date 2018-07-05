@@ -201,7 +201,10 @@ namespace Compilador.FrontEnd
             byte[] bytes = BitConverter.GetBytes( symbol.getAddress() );
             string l1 = u8.GetString(bytes);
 
-            symbol.nivel_corrente = SymbolTable.nivel_corrente;
+
+            if (SymbolTable.nivel_corrente != symbol.nivel_corrente)
+                new Exception("Error: Goto statements aren't allowed between different procedures");
+
             currentToken.TokenType = symbol.getTokenType();
 
             GenerateMepa(l1.Trim(), "ENRT", symbol.nivel_corrente + "," + SymbolTable.getQteVariaveis()); //Posição ao qual o GOTO TEM QUE SE REFERIR através de L1
@@ -273,11 +276,12 @@ namespace Compilador.FrontEnd
             symbol = SymbolTable.Busca(currentToken.TokenValue);
             currentToken.TokenType = symbol.getTokenType();
 
+            if (SymbolTable.nivel_corrente != symbol.nivel_corrente)
+                new Exception("Error: Goto statements aren't allowed between different procedures");
+
             Encoding u8 = Encoding.UTF8;
             byte[] bytes = BitConverter.GetBytes(symbol.getAddress());
             string l1 = u8.GetString(bytes);
-
-            
 
             //precisa por o rotulo do simbolo, o nivel do simbolo e o nivel atual como parametros
             GenerateMepa("", "DSVR", l1 + "," + symbol.nivel_corrente + "," + SymbolTable.nivel_corrente );
