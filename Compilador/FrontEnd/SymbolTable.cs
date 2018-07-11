@@ -8,11 +8,9 @@ namespace Compilador.FrontEnd
 {
     public class SymbolTable
     {
-        private static readonly int HASH_TABLE_SIZE = 211;
-
         public class Scope
         {
-            public Symbol[] symbolTable = new Symbol[HASH_TABLE_SIZE]; // symbol table for the current scope
+            public Dictionary<string, Symbol> symbolTable = new Dictionary<string, Symbol>(); // symbol table for the current scope
             public Scope next { get; set; } = null; // pointer to the next outer scope
         }
 
@@ -22,63 +20,29 @@ namespace Compilador.FrontEnd
 
         public static void Insere(Symbol symbol)
         {
-            int hashValue = hash(symbol.getName());
             symbol.nivel_corrente = nivel_corrente;
 
-            Symbol bucketCursor = headerScope.symbolTable[hashValue];
-            if (bucketCursor == null)
-            {
-                // Empty bucket
-                headerScope.symbolTable[hashValue] = symbol;
-            }
-            else
-            {
-                // Existing Symbols in bucket
-                while (bucketCursor.next != null)
-                {
-                    bucketCursor = bucketCursor.next;
-                }
-
-                // Append symbol at the end of the bucket
-                bucketCursor.next = symbol;
-            }
+            headerScope.symbolTable[symbol.getName()] = symbol;
+   
         }
 
         public static Symbol Busca(String symbolName)
         {
-            int hashValue = hash(symbolName);
             Scope scopeCursor = headerScope;
-            Symbol bucketCursor;
 
             while (scopeCursor != null)
             {
-                bucketCursor = scopeCursor.symbolTable[hashValue];
-                while (bucketCursor != null)
+               
+                if ( scopeCursor.symbolTable.ContainsKey(symbolName) )
                 {
-                    if (bucketCursor.getName().Equals(symbolName))
-                    {
-                        return bucketCursor;
-                    }
-                    bucketCursor = bucketCursor.next;
+                   return scopeCursor.symbolTable[symbolName];
                 }
+
                 scopeCursor = scopeCursor.next;
             }
 
             // Symbol does not exist
             return null;
-        }
-
-        public static int hash(String symbolName)
-        {
-            int h = 0;
-            for (int i = 0; i < symbolName.Length; i++)
-            {
-                h = h + h + symbolName[i];
-            }
-
-            h = h % HASH_TABLE_SIZE;
-
-            return h;
         }
 
         public static void openScope()
