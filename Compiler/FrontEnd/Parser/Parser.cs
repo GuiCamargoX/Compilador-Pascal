@@ -25,7 +25,6 @@ namespace Compiler.FrontEnd
         private static readonly int INSTRUCTION_SIZE = 1000;
 
         private static Byte[] byteArray = new Byte[INSTRUCTION_SIZE];
-        private static int s = -1;
         private static int qte_label = 1;
 
         static Parser()
@@ -89,7 +88,7 @@ namespace Compiler.FrontEnd
                 saida = File.Open("Mepa.txt", FileMode.Create);
                 file = new StreamWriter(saida);
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
 
         }
 
@@ -768,7 +767,7 @@ namespace Compiler.FrontEnd
 
         private static void procDeclaration()
         {
-            String l1=null, l2=null , n;
+            String l1=null, l2=null;
             // declaration
             if (currentToken.TokenType.Equals("TK_PROCEDURE"))
             {
