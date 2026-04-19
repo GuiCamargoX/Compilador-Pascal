@@ -52,7 +52,32 @@ In this repository:
 - key method: `GenerateMepa(...)`
 - job: write instructions to `Mepa.txt`
 
-## 4) Why tokens matter 🧩
+## 4) What is grammar, formally? 📐
+
+In computer science terms, parser grammar is usually a **context-free grammar (CFG)**.
+
+A CFG has:
+
+- terminals (actual token categories, like `TK_IF`)
+- non-terminals (language concepts, like `Expression`)
+- productions (rules that define valid token structures)
+
+Example production idea:
+
+```text
+IfStatement -> 'if' Expression 'then' Statement ['else' Statement]
+```
+
+In this repository, productions are encoded as parser methods + `match(...)` calls.
+
+Where to see it:
+
+- `ifStat()` in `Compiler/FrontEnd/Parser/Parser.Statements.cs`
+- `match(...)` in `Compiler/FrontEnd/Parser/Parser.cs`
+
+For a dedicated deep dive, read `docs/grammar-and-parsing.md`.
+
+## 5) Why tokens matter 🧩
 
 The parser does not parse raw text. It parses token categories like:
 
@@ -62,7 +87,7 @@ The parser does not parse raw text. It parses token categories like:
 
 This separation keeps parsing logic simpler and more reliable.
 
-## 5) Why a symbol table matters 🗂️
+## 6) Why a symbol table matters 🗂️
 
 The symbol table stores identifier meaning:
 
@@ -74,7 +99,7 @@ The symbol table stores identifier meaning:
 
 Without this structure, parser rules can check syntax, but not correctness of usage.
 
-## 6) Tiny end-to-end example ✨
+## 7) Tiny end-to-end example ✨
 
 Source (from `Compiler/Tests/while.pas`):
 
@@ -94,14 +119,14 @@ What happens conceptually:
 3. symbol table resolves `x`
 4. parser emits MEPA lines (`CRCT`, `ARMZ`, `DSVF`, `SOMA`, ...)
 
-## 7) Tradeoffs of this teaching design ⚖️
+## 8) Tradeoffs of this teaching design ⚖️
 
 - strength: very traceable flow for beginners
 - strength: compact codebase, easy to navigate
 - tradeoff: legacy naming still exists in a few methods
 - tradeoff: default run mode depends on current working directory
 
-## 8) Recommended read order for first-time learners 📚
+## 9) Recommended read order for first-time learners 📚
 
 1. `Compiler/Program.cs`
 2. `Compiler/FrontEnd/Lexer/Token.cs`

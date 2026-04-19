@@ -4,9 +4,16 @@ Welcome! This is your step-by-step study plan if you are new to compilers.
 
 You do not need to know compiler theory in advance. Follow the stages in order and run the checkpoints.
 
+If you want a level-based route first, start at `docs/tutorial-index.md`.
+
 ## Stage 0: Setup and first run ⚙️
 
 Goal: prove the project builds and runs on your machine.
+
+Theory focus:
+
+- observability-first development (run before modifying)
+- compiler outputs are artifacts you can inspect (`TK_EOF`, `Mepa.txt`)
 
 1. Build from repo root:
 
@@ -17,6 +24,7 @@ xbuild Compiler.sln /p:Configuration=Debug
 2. Run default fixture from `Compiler/Tests`:
 
 ```bash
+cd Compiler/Tests
 mono ../bin/Debug/Compiler.exe
 ```
 
@@ -34,6 +42,11 @@ Read in this order:
 3. `docs/architecture-map.md`
 4. `docs/glossary.md`
 
+Theory focus:
+
+- compiler pipeline as a composition of stages
+- front-end responsibilities vs code generation responsibilities
+
 Checkpoint:
 
 - you can explain the pipeline: source -> tokens -> parse/semantics -> MEPA
@@ -47,6 +60,12 @@ Read:
 3. `Compiler/FrontEnd/Lexer/Word.cs`
 4. `Compiler/FrontEnd/Lexer/Scanner.cs`
 
+Theory focus:
+
+- lexical grammar (character patterns -> tokens)
+- finite-state behavior via `Word` flags
+- why parser should consume tokens, not raw characters
+
 Hands-on exercise:
 
 1. Run with `Compiler/Tests/while.pas`
@@ -56,6 +75,29 @@ Hands-on exercise:
 Checkpoint:
 
 - you understand where tokens are emitted (`generateToken(...)`)
+
+## Stage 2.5: Learn grammar and parsing theory 📐
+
+Read:
+
+1. `docs/grammar-and-parsing.md`
+
+Theory focus:
+
+- what grammar is (BNF/EBNF)
+- non-terminals and terminals
+- recursive descent parsing
+- precedence by grammar layering
+
+Hands-on exercise:
+
+1. Write EBNF for `while` statement.
+2. Map your EBNF rule to `whileStat()` in `Parser.Statements.cs`.
+3. Identify every `match(...)` corresponding to your terminals.
+
+Checkpoint:
+
+- you can map one EBNF rule directly to parser method calls
 
 ## Stage 3: Learn parser + semantic checks 🧩
 
@@ -67,6 +109,12 @@ Read:
 4. `Compiler/FrontEnd/Parser/Parser.Declarations.cs`
 5. `Compiler/FrontEnd/Parser/Parser.Statements.cs`
 6. `Compiler/FrontEnd/Parser/Parser.Expressions.cs`
+
+Theory focus:
+
+- syntax validation vs semantic validation
+- statement dispatch using first-token decisions
+- symbol scope and name resolution
 
 Hands-on exercise:
 
@@ -83,6 +131,11 @@ Checkpoint:
 Read:
 
 1. `docs/types-in-this-compiler.md`
+
+Theory focus:
+
+- language type vs token type vs semantic type
+- why compilers keep separate representations at each layer
 
 Hands-on exercise:
 
@@ -102,6 +155,11 @@ Run:
 - explicit CLI input: `Compiler/Tests/for.pas`
 - optional extras: `ifElse.pas`, `repeat.pas`
 
+Theory focus:
+
+- differential validation (same compiler, multiple input programs)
+- regression safety before/after refactors
+
 Checkpoint:
 
 - you can run both default mode and CLI-input mode
@@ -113,6 +171,12 @@ Read:
 1. `docs/implement-new-feature.md`
 2. `docs/build-your-own-compiler.md`
 3. `docs/debugging-checklist.md`
+
+Theory focus:
+
+- grammar-first implementation workflow
+- syntax -> semantics -> codegen chain
+- commit-sized scientific method: hypothesis, change, validate
 
 Suggested first features:
 

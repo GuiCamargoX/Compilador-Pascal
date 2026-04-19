@@ -57,3 +57,4 @@ Use this file as your quick mental map before diving into code.
 3. read scanner flow in `Scanner.cs`
 4. read symbol model (`Symbol.cs`, `SymbolTable.cs`)
 5. read parser top-down starting from `Parser.cs` (`parse()`), then continue in the other parser partial files
+6. read `docs/grammar-and-parsing.md` to map grammar theory to parser implementation

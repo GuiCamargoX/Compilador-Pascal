@@ -23,6 +23,7 @@ xbuild Compiler.sln /p:Configuration=Debug
 Run the default fixture from `Compiler/Tests`:
 
 ```bash
+cd Compiler/Tests
 mono ../bin/Debug/Compiler.exe
 ```
 
@@ -32,10 +33,10 @@ What should happen:
 - output reaches `TK_EOF`
 - `Mepa.txt` is created/updated in your current directory
 
-Run a custom input file (from repo root):
+Run a custom input file (still inside `Compiler/Tests`):
 
 ```bash
-mono Compiler/bin/Debug/Compiler.exe Compiler/Tests/for.pas
+mono ../bin/Debug/Compiler.exe for.pas
 ```
 
 ## What is a compiler? 🧠
@@ -108,8 +109,10 @@ Tip: run `while.pas`, inspect tokens, then inspect `Mepa.txt` immediately after.
 
 ## Documentation map 📚
 
-- start here: `docs/learning-path.md`
+- start here (level-based): `docs/tutorial-index.md`
+- full study sequence: `docs/learning-path.md`
 - concepts: `docs/compiler-fundamentals.md`
+- grammar + parsing theory: `docs/grammar-and-parsing.md`
 - quick terms: `docs/glossary.md`
 - end-to-end trace with code references: `docs/how-it-works.md`
 - architecture overview: `docs/architecture-map.md`

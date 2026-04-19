@@ -19,6 +19,11 @@ Start with:
 
 Goal: decide exactly what syntax you support.
 
+Theory lens:
+
+- language design always starts with constraints
+- smaller language subset reduces grammar ambiguity and implementation risk
+
 Do:
 
 1. write 3-5 sample programs
@@ -30,6 +35,11 @@ In this repo, that subset includes `if`, `while`, `for`, `repeat`, `case`, and s
 ## Milestone 2: Define tokens (vocabulary) 🔤
 
 Goal: decide what token categories exist.
+
+Theory lens:
+
+- lexical analysis is typically modeled with regular languages and finite-state automata
+- scanner converts a character stream into a symbol stream for parser consumption
 
 Do:
 
@@ -67,9 +77,21 @@ Done when:
 
 - token stream ends with `TK_EOF`
 
+Conceptual diagram:
+
+```text
+Characters -> Lexeme state -> Token object -> Token stream
+```
+
 ## Milestone 4: Build parser 🧩
 
 Goal: validate grammar structure from token stream.
+
+Theory lens:
+
+- parser works on context-free grammar rules
+- recursive descent maps non-terminals to functions
+- `match(...)` corresponds to consuming terminal symbols
 
 Do:
 
@@ -89,9 +111,26 @@ Done when:
 - valid programs parse completely
 - invalid programs fail at clear token mismatch points
 
+Conceptual diagram:
+
+```text
+Grammar rule (EBNF)
+        |
+        v
+Parser method
+        |
+        v
+match(...) + nested rule calls
+```
+
 ## Milestone 5: Add semantic checks 🧠
 
 Goal: check meaning (not only syntax).
+
+Theory lens:
+
+- static semantics checks validity without running the program
+- symbol table is the central structure for declarations, types, and scope
 
 Do:
 
@@ -111,6 +150,11 @@ Done when:
 ## Milestone 6: Generate target instructions ⚙️
 
 Goal: emit executable/intermediate representation.
+
+Theory lens:
+
+- code generation lowers high-level constructs into lower-level operations
+- this project targets a stack-style intermediate language (MEPA-like)
 
 In this repo:
 
@@ -135,6 +179,10 @@ Smoke checklist:
 2. run default or CLI input mode
 3. confirm `TK_EOF`
 4. inspect `Mepa.txt`
+
+Theory lens:
+
+- verification should include both structural correctness (tokens, parse) and behavioral artifacts (generated instructions)
 
 ## Suggested implementation order for a brand-new compiler 🪜
 

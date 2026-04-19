@@ -21,6 +21,28 @@ Bad:
 
 ## Step-by-step workflow 🪜
 
+### Step 0: Write the grammar rule first (theory-first)
+
+Before touching code, write a compact EBNF rule for your feature.
+
+Example pattern:
+
+```text
+MyStatement -> 'mykeyword' Expression 'then' Statement
+```
+
+Why this matters:
+
+- avoids ad-hoc parser edits
+- makes terminals/non-terminals explicit
+- gives you a direct checklist for `match(...)` calls
+
+Grammar-to-code mapping diagram:
+
+```text
+EBNF rule -> parser method -> match(...) terminals -> nested non-terminal calls
+```
+
 ### Step 1: Write the feature example first
 
 Create a tiny Pascal snippet showing exactly what you want.
@@ -63,6 +85,10 @@ Files:
 
 Goal: parser recognizes the new token sequence and uses `match(...)` correctly.
 
+Theory tip:
+
+- dispatch method (`statements()`/`declarations`/`expressions`) chooses which production to apply using lookahead token type
+
 ### Step 5: Add semantic logic (if needed)
 
 Files:
@@ -79,6 +105,10 @@ Files:
 - parser rule methods + `GenerateMepa(...)`
 
 Goal: compiled output reflects the new construct.
+
+Theory tip:
+
+- code generation should preserve semantic intent of grammar rule, not just token sequence
 
 ### Step 7: Verify with fixtures
 

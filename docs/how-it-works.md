@@ -57,6 +57,25 @@ Core parser mechanics:
 - `getToken()` advances token iterator
 - when parser sees identifiers, it consults symbol table via `SymbolTable.Lookup(...)`
 
+Grammar perspective:
+
+- parser methods are production implementations
+- `match(...)` corresponds to terminal consumption
+- method calls between parser methods correspond to non-terminal expansion
+
+Mini diagram:
+
+```text
+Production (grammar)
+      |
+      v
+Parser method
+      |
+      +--> match(TOKEN_A)
+      +--> call OtherRule()
+      +--> match(TOKEN_B)
+```
+
 ## 4) Semantic checks and symbol tracking 🗂️
 
 Open `Compiler/FrontEnd/Semantics/SymbolTable.cs`.
@@ -126,6 +145,38 @@ Custom input mode:
 
 ```bash
 mono Compiler/bin/Debug/Compiler.exe Compiler/Tests/for.pas
+```
+
+## 6.1) Grammar-to-code example: `while` 🔁
+
+Grammar idea (EBNF):
+
+```text
+WhileStatement -> 'while' Expression 'do' Statement
+```
+
+Implementation path:
+
+- method: `whileStat()` in `Compiler/FrontEnd/Parser/Parser.Statements.cs`
+- key sequence:
+  - `match("TK_WHILE")`
+  - `Expressao()`
+  - `match("TK_DO")`
+  - `statements()`
+
+Code-generation side effects:
+
+- creates loop labels with `Next_Label()`
+- emits conditional jump (`DSVF`) and back jump (`DSVS`)
+
+Control-flow diagram:
+
+```text
+L_start: evaluate condition
+         if false -> L_end
+         body
+         jump L_start
+L_end:   continue
 ```
 
 ## 7) Why this design works for learning 🎓
