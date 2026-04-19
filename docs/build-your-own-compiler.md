@@ -33,7 +33,7 @@ Goals:
 - split source text into meaningful token units
 - attach source position for debugging
 
-In this repo: `Compiler/FrontEnd/Scanner.cs`.
+In this repo: `Compiler/FrontEnd/Lexer/Scanner.cs`.
 
 ## 4) Build parser
 
@@ -44,7 +44,7 @@ Goals:
 - enforce grammar order
 - call semantic checks at key points
 
-In this repo: `Compiler/FrontEnd/Parser.cs`.
+In this repo: `Compiler/FrontEnd/Parser/Parser.cs`.
 
 ## 5) Add semantic model
 
@@ -56,7 +56,7 @@ You need symbol tracking:
 - scope levels
 - identifier categories and types
 
-In this repo: `Compiler/FrontEnd/SymbolTable.cs` and `Compiler/FrontEnd/Symbol.cs`.
+In this repo: `Compiler/FrontEnd/Semantics/SymbolTable.cs` and `Compiler/FrontEnd/Semantics/Symbol.cs`.
 
 ## 6) Generate target representation
 

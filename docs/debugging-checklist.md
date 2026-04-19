@@ -25,8 +25,8 @@ Use this when a change breaks compilation or output.
 ## If MEPA output looks wrong
 
 - Compare generated `Mepa.txt` before/after your change.
-- Trace parser rule entry points in `Compiler/FrontEnd/Parser.cs` for the construct under test.
-- Check symbol insertion and lookup paths in `Compiler/FrontEnd/SymbolTable.cs`.
+- Trace parser rule entry points in `Compiler/FrontEnd/Parser/Parser.cs` for the construct under test.
+- Check symbol insertion and lookup paths in `Compiler/FrontEnd/Semantics/SymbolTable.cs`.
 
 ## Beginner-safe investigation routine
 

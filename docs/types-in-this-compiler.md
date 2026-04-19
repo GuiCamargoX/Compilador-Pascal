@@ -15,7 +15,7 @@ These are source-language concepts used in declarations:
 
 Where this mapping is defined:
 
-- `Compiler/FrontEnd/Parser.cs` in `STRING_TYPE_HASH_MAP`
+- `Compiler/FrontEnd/Parser/Parser.cs` in `STRING_TYPE_HASH_MAP`
 
 ## 2) Token types from lexical analysis
 

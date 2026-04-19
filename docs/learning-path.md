@@ -17,9 +17,9 @@ Goal: understand the end-to-end flow before reading details.
 Read:
 
 1. `Compiler/Tools/TypePascal.cs`
-2. `Compiler/FrontEnd/Token.cs`
-3. `Compiler/FrontEnd/Word.cs`
-4. `Compiler/FrontEnd/Scanner.cs`
+2. `Compiler/FrontEnd/Lexer/Token.cs`
+3. `Compiler/FrontEnd/Lexer/Word.cs`
+4. `Compiler/FrontEnd/Lexer/Scanner.cs`
 
 Exercise:
 
@@ -30,9 +30,9 @@ Exercise:
 
 Read:
 
-1. `Compiler/FrontEnd/Symbol.cs`
-2. `Compiler/FrontEnd/SymbolTable.cs`
-3. `Compiler/FrontEnd/Parser.cs`
+1. `Compiler/FrontEnd/Semantics/Symbol.cs`
+2. `Compiler/FrontEnd/Semantics/SymbolTable.cs`
+3. `Compiler/FrontEnd/Parser/Parser.cs`
 
 Exercise:
 

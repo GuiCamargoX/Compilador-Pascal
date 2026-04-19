@@ -32,4 +32,4 @@
 ## Repo gotchas
 - Prefer `Compiler/Tests/*.pas` as parser fixtures; many `examples/*.pas` files use headers that do not match current parser expectation.
 - Comment support is incomplete; unknown characters can throw scanner exception (`Unhandled element scanned`).
-- `Compiler/FrontEnd/ParserAux.cs` is legacy/commented-out content and not part of active compiler flow.
+- `Compiler/FrontEnd/Parser/ParserAux.cs` is legacy/commented-out content and not part of active compiler flow.

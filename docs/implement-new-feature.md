@@ -36,7 +36,7 @@ Examples of features:
 
 ### Step 3: parser updates
 
-- add parser branch in `Compiler/FrontEnd/Parser.cs` where statement/expression should be recognized
+- add parser branch in `Compiler/FrontEnd/Parser/Parser.cs` where statement/expression should be recognized
 - consume tokens with `match(...)`
 - keep style consistent with existing parser methods
 

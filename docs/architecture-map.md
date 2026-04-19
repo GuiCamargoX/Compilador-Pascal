@@ -8,15 +8,15 @@ Use this file as a quick mental map before reading code.
   - application entrypoint
   - wires scanner output into parser input
 
-- `Compiler/FrontEnd/Scanner.cs`
+- `Compiler/FrontEnd/Lexer/Scanner.cs`
   - lexical analysis (characters -> tokens)
 
-- `Compiler/FrontEnd/Parser.cs`
+- `Compiler/FrontEnd/Parser/Parser.cs`
   - grammar rules
   - semantic checks
   - MEPA code emission
 
-- `Compiler/FrontEnd/SymbolTable.cs` and `Compiler/FrontEnd/Symbol.cs`
+- `Compiler/FrontEnd/Semantics/SymbolTable.cs` and `Compiler/FrontEnd/Semantics/Symbol.cs`
   - identifier metadata
   - scope stack behavior
 

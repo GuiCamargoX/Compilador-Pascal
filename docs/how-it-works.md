@@ -11,9 +11,9 @@ This document explains the current implementation as it exists in code.
 Core wiring:
 
 - `Compiler/Program.cs`
-- `Compiler/FrontEnd/Scanner.cs`
-- `Compiler/FrontEnd/Parser.cs`
-- `Compiler/FrontEnd/SymbolTable.cs`
+- `Compiler/FrontEnd/Lexer/Scanner.cs`
+- `Compiler/FrontEnd/Parser/Parser.cs`
+- `Compiler/FrontEnd/Semantics/SymbolTable.cs`
 - `Compiler/Tools/TypePascal.cs`
 
 ## Why this design
