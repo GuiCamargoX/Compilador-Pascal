@@ -16,11 +16,10 @@ namespace Compiler.Tools
             LETTER, DIGIT, SPACE, OPERATOR, QUOTE
         }
 
-        private static Dictionary<String, String> KEYWORDS_TOKEN; //Classifica o tipodeToken com sua chave 'palavra reservada' do Pascal
-        private static Dictionary<String, String> OPERATORS_TOKEN;//Classifica o tipodeToken com sua chave 'operadores' do Pascal
+        private static Dictionary<String, String> KEYWORDS_TOKEN;
+        private static Dictionary<String, String> OPERATORS_TOKEN;
 
-        private static Dictionary<String, TYPE> CHAR_TYPE;/* Cria um alfabeto do Pascal,classificando em :Letter,Digit,Space,Operator,Quote
-                                                            obs: Posso verificar facilmente se um caracter pertence ao alfabeto ou não */
+        private static Dictionary<String, TYPE> CHAR_TYPE;
 
         static TypePascal()
         {
@@ -28,7 +27,7 @@ namespace Compiler.Tools
             KEYWORDS_TOKEN = new Dictionary<string, string>();
             String word;
 
-            Assembly _assembly = Assembly.GetExecutingAssembly();//adicionando Recurso
+            Assembly _assembly = Assembly.GetExecutingAssembly();
             using (TextReader leitor = new StreamReader(_assembly.GetManifestResourceStream("Compiler.Resource.keywords.txt")) )
             {
                 word = leitor.ReadLine();
@@ -61,11 +60,10 @@ namespace Compiler.Tools
             OPERATORS_TOKEN["="] = "TK_EQUAL";
             OPERATORS_TOKEN["<>"] = "TK_NOT_EQUAL";
 
-
             CHAR_TYPE = new Dictionary<string, TYPE>();
-            for (int i = 65; i < 91; i++) //converte 65-90 Unicode para letras A-Z e classifica como LETTER 
+            for (int i = 65; i < 91; i++)
             {
-                // Add letters
+
                 char ch = Convert.ToChar(i);
                 string currentChar = ch.ToString();
                 CHAR_TYPE[currentChar] = TYPE.LETTER;
@@ -74,7 +72,7 @@ namespace Compiler.Tools
 
             for (int i = 48; i < 58; i++)
             {
-                // Add digits
+
                 char ch = Convert.ToChar(i);
                 string currentChar = ch.ToString();
                 CHAR_TYPE[currentChar] = TYPE.DIGIT;
@@ -82,7 +80,7 @@ namespace Compiler.Tools
 
             for (int i = 1; i < 33; i++)
             {
-                // Add spaces
+
                 char ch = Convert.ToChar(i);
                 string currentChar = ch.ToString();
                 CHAR_TYPE[currentChar] = TYPE.SPACE;
@@ -90,12 +88,11 @@ namespace Compiler.Tools
 
             foreach (KeyValuePair<string, string> par in OPERATORS_TOKEN)
             {
-                // podemos acessar a chave atual do dicionário
+
                 string chave = par.Key;
                 CHAR_TYPE[chave] = TYPE.OPERATOR;
             }
 
-            // Add single quote (=Apostrophe = ')
             char c = Convert.ToChar(39);
             string currenChar = c.ToString();
             CHAR_TYPE[currenChar] = TYPE.QUOTE;
@@ -121,8 +118,7 @@ namespace Compiler.Tools
 
         public static bool OpContainsKey(char element ) {
             return OPERATORS_TOKEN.ContainsKey( element.ToString() );
-        } 
+        }
 
-        //elemento string, char
     }
 }

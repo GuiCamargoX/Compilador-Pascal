@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Compiler.FrontEnd
 {
-    static class Word //word= sequencia de caracters do alafabeto , classe auxilio para juntar os caracters em uma string 
+    static class Word
     {
         public static string TokenName { get; set; } = "";
         public static int LineRow { get; set; } = 0;
