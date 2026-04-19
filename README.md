@@ -94,3 +94,8 @@ mono ../bin/Debug/Compilador.exe
 - Scanner reaches `TK_EOF`.
 - Parser does not throw in `match(...)`.
 - `Mepa.txt` is created and updated on each run.
+
+## Learn more
+
+- Architecture walkthrough: `docs/how-it-works.md`
+- Practical debugging guide: `docs/debugging-checklist.md`
