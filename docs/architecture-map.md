@@ -1,0 +1,59 @@
+# Architecture Map
+
+Use this file as a quick mental map before reading code.
+
+## High-level boundaries
+
+- `Compilador/Program.cs`
+  - application entrypoint
+  - wires scanner output into parser input
+
+- `Compilador/FrontEnd/Scanner.cs`
+  - lexical analysis (characters -> tokens)
+
+- `Compilador/FrontEnd/Parser.cs`
+  - grammar rules
+  - semantic checks
+  - MEPA code emission
+
+- `Compilador/FrontEnd/SymbolTable.cs` and `Compilador/FrontEnd/Symbol.cs`
+  - identifier metadata
+  - scope stack behavior
+
+- `Compilador/Tools/TypePascal.cs`
+  - keyword and operator classification tables
+  - character categories used by scanner
+
+## Runtime call flow
+
+1. `Program.Main`
+2. `new Scanner("while.pas").getAnalex()`
+3. `Parser.SetTokenArrayListIterator(tokens)`
+4. `Parser.parse()`
+5. parser emits `Mepa.txt`
+
+## Core data objects
+
+- `Token`
+  - `TokenType`, `TokenValue`, `LineCol`, `LineRow`
+
+- `Symbol`
+  - name, token kind, semantic type, scope level, address
+
+- `Parser.TYPE`
+  - internal semantic categories (`I`, `R`, `B`, `C`, `S`, `P`, `L`, `A`)
+
+## Easy-to-break couplings
+
+- hardcoded source filename in `Program.cs`
+- parser startup grammar requires parameter list in program header
+- `Mepa.txt` output depends on current working directory
+- keyword resource name must match embedded manifest path
+
+## Suggested reading strategy
+
+1. read `Program.cs` to see wiring
+2. inspect `Token.cs` and `TypePascal.cs` for lexical vocabulary
+3. read scanner flow in `Scanner.cs`
+4. read symbol model (`Symbol.cs`, `SymbolTable.cs`)
+5. read parser top-down starting from `parse()`
