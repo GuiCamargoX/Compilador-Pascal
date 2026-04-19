@@ -10,9 +10,9 @@ namespace Compilador
 
         static void Main(string[] args)
         {
-            List<Token> tokens = new Scanner(DefaultSourceFile).getAnalex();
-            Parser.SetTokenArrayListIterator(tokens);
-            Parser.parse();
+            List<Token> tokens = new Scanner(DefaultSourceFile).GetTokens();
+            Parser.SetTokenIterator(tokens);
+            Parser.Parse();
             Console.ReadKey();
         }
     }

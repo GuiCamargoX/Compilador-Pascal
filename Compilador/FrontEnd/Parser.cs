@@ -77,6 +77,11 @@ namespace Compilador.FrontEnd
             return byteArray;
         }
 
+        public static Byte[] Parse()
+        {
+            return parse();
+        }
+
         private static void openFileOutput()
         {
             try
@@ -885,6 +890,11 @@ namespace Compilador.FrontEnd
         public static void SetTokenArrayListIterator(List<Token> tokenArrayList)
         {
             it = tokenArrayList.GetEnumerator();
+        }
+
+        public static void SetTokenIterator(List<Token> tokenArrayList)
+        {
+            SetTokenArrayListIterator(tokenArrayList);
         }
 
         public static void match(String tokenType)

@@ -27,9 +27,9 @@ Use this file as a quick mental map before reading code.
 ## Runtime call flow
 
 1. `Program.Main`
-2. `new Scanner("while.pas").getAnalex()`
-3. `Parser.SetTokenArrayListIterator(tokens)`
-4. `Parser.parse()`
+2. `new Scanner("while.pas").GetTokens()`
+3. `Parser.SetTokenIterator(tokens)`
+4. `Parser.Parse()`
 5. parser emits `Mepa.txt`
 
 ## Core data objects

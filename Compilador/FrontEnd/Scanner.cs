@@ -32,6 +32,11 @@ namespace Compilador.FrontEnd
             return tokenArrayList;
         }
 
+        public List<Token> GetTokens()
+        {
+            return getAnalex();
+        }
+
         public static void CheckCharacter(char element) {
 
             switch ( TypePascal.Get( element )) { //get retorna um letter,ou digit, 

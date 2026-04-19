@@ -32,7 +32,7 @@ Core wiring:
 1. `Main` creates `Scanner("while.pas")`.
 2. `Scanner` reads the file as lowercase chars and classifies each char using `TypePascal.Get`.
 3. Tokens are generated and printed to stdout.
-4. `Parser` consumes the token list with `SetTokenArrayListIterator` + `parse()`.
+4. `Parser` consumes the token list with `SetTokenIterator(...)` + `Parse()`.
 5. Parser expects `program <id> ( <id> [, <id>]* );` before declarations.
 6. During parse, symbols are inserted/looked up in `SymbolTable`.
 7. Parser writes MEPA instructions to `Mepa.txt` in the current working directory.
