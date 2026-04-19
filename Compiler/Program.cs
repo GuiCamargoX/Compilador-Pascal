@@ -10,10 +10,21 @@ namespace Compiler
 
         static void Main(string[] args)
         {
-            List<Token> tokens = new Scanner(DefaultSourceFile).GetTokens();
+            string sourceFile = ResolveSourceFile(args);
+            List<Token> tokens = new Scanner(sourceFile).GetTokens();
             Parser.SetTokenIterator(tokens);
             Parser.Parse();
             Console.ReadKey();
+        }
+
+        private static string ResolveSourceFile(string[] args)
+        {
+            if (args != null && args.Length > 0 && !string.IsNullOrWhiteSpace(args[0]))
+            {
+                return args[0];
+            }
+
+            return DefaultSourceFile;
         }
     }
 }

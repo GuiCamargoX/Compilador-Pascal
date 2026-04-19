@@ -24,12 +24,12 @@ Core wiring:
 ## Tradeoffs
 
 - Good for learning the complete flow in a small codebase.
-- Parser is a large single file, so adding grammar features can become hard to maintain.
-- Runtime behavior depends on working directory and hardcoded input filename.
+- Parser is split by concern into partial files under `Compiler/FrontEnd/Parser/`.
+- Runtime behavior depends on working directory only when no CLI input path is passed.
 
 ## How it works (flow)
 
-1. `Main` creates `Scanner("while.pas")`.
+1. `Main` resolves input path from `args[0]` when present, otherwise defaults to `while.pas`, then creates `Scanner(...)`.
 2. `Scanner` reads the file as lowercase chars and classifies each char using `TypePascal.Get`.
 3. Tokens are generated and printed to stdout.
 4. `Parser` consumes the token list with `SetTokenIterator(...)` + `Parse()`.
@@ -51,11 +51,17 @@ From `Compiler/Tests`:
 mono ../bin/Debug/Compiler.exe
 ```
 
-Why `Compiler/Tests`? `Program.cs` uses `while.pas` by relative path.
+Why `Compiler/Tests`? default mode expects `while.pas` in the current working directory.
+
+Optional custom input from repo root:
+
+```bash
+mono Compiler/bin/Debug/Compiler.exe Compiler/Tests/for.pas
+```
 
 ## Common mistakes
 
-- Running executable outside `Compiler/Tests` (input file not found).
+- Running without CLI input outside `Compiler/Tests` (default `while.pas` not found).
 - Using `examples/*.pas` fixtures for parser validation; many headers do not match current parser startup rule.
 - Editing `keywords.txt` without preserving embedded resource loading (`Compiler.Resource.keywords.txt`).
 

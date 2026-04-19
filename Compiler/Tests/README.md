@@ -4,7 +4,7 @@ This folder contains parser-focused Pascal fixtures used as smoke tests.
 
 ## Why these fixtures matter
 
-`Program.cs` currently compiles a hardcoded file (`while.pas`), so this folder is the safest place to run baseline checks.
+`Program.cs` supports optional CLI input. When no input is provided, it defaults to `while.pas`, so this folder is the safest place to run baseline checks.
 
 ## Suggested fixture order
 

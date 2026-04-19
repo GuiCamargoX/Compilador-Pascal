@@ -26,15 +26,15 @@ In this repository:
    - role: convert characters into token stream
 
 2. Syntax analysis (parser)
-   - file: `Compiler/FrontEnd/Parser/Parser.cs`
+   - files: `Compiler/FrontEnd/Parser/Parser*.cs`
    - role: check token order follows grammar rules
 
 3. Semantic checks
-   - files: `Compiler/FrontEnd/Parser/Parser.cs`, `Compiler/FrontEnd/Semantics/SymbolTable.cs`
+   - files: `Compiler/FrontEnd/Parser/Parser*.cs`, `Compiler/FrontEnd/Semantics/SymbolTable.cs`
    - role: verify declarations, uses, scope, and typing context
 
 4. Intermediate code generation
-   - file: `Compiler/FrontEnd/Parser/Parser.cs`
+   - files: `Compiler/FrontEnd/Parser/Parser*.cs`
    - role: write MEPA-like instructions to `Mepa.txt`
 
 ## Why tokens matter
@@ -64,7 +64,7 @@ Without this table, the parser could read syntax but could not validate meaning.
 - Strength: clear end-to-end pipeline for learning
 - Strength: small codebase makes tracing easier
 - Tradeoff: parser file is large, so scaling grammar is harder
-- Tradeoff: runtime depends on current working directory and hardcoded input file
+- Tradeoff: default mode depends on current working directory unless an explicit input path is provided
 
 ## Read-order recommendation for beginners
 
@@ -74,4 +74,4 @@ Without this table, the parser could read syntax but could not validate meaning.
 4. `Compiler/FrontEnd/Lexer/Scanner.cs`
 5. `Compiler/FrontEnd/Semantics/Symbol.cs`
 6. `Compiler/FrontEnd/Semantics/SymbolTable.cs`
-7. `Compiler/FrontEnd/Parser/Parser.cs`
+7. `Compiler/FrontEnd/Parser/Parser.cs` then `Compiler/FrontEnd/Parser/Parser*.cs`

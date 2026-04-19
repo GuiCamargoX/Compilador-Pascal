@@ -5,10 +5,11 @@ Use this when a change breaks compilation or output.
 ## Quick checks
 
 1. Confirm you built `Compiler.sln` in Debug.
-2. Confirm you run from `Compiler/Tests`.
-3. Confirm `while.pas` exists in the current directory.
-4. Confirm scanner output reaches `TK_EOF`.
-5. Confirm `Mepa.txt` was regenerated.
+2. If running without args, confirm you are in `Compiler/Tests`.
+3. If running without args, confirm `while.pas` exists in the current directory.
+4. If running with args, confirm the provided input path exists.
+5. Confirm scanner output reaches `TK_EOF`.
+6. Confirm `Mepa.txt` was regenerated.
 
 ## If scanner fails
 
@@ -25,7 +26,7 @@ Use this when a change breaks compilation or output.
 ## If MEPA output looks wrong
 
 - Compare generated `Mepa.txt` before/after your change.
-- Trace parser rule entry points in `Compiler/FrontEnd/Parser/Parser.cs` for the construct under test.
+- Trace parser rule entry points in `Compiler/FrontEnd/Parser/Parser*.cs` for the construct under test.
 - Check symbol insertion and lookup paths in `Compiler/FrontEnd/Semantics/SymbolTable.cs`.
 
 ## Beginner-safe investigation routine

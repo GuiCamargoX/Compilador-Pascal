@@ -11,7 +11,7 @@ Use this file as a quick mental map before reading code.
 - `Compiler/FrontEnd/Lexer/Scanner.cs`
   - lexical analysis (characters -> tokens)
 
-- `Compiler/FrontEnd/Parser/Parser.cs`
+- `Compiler/FrontEnd/Parser/Parser*.cs`
   - grammar rules
   - semantic checks
   - MEPA code emission
@@ -27,7 +27,7 @@ Use this file as a quick mental map before reading code.
 ## Runtime call flow
 
 1. `Program.Main`
-2. `new Scanner("while.pas").GetTokens()`
+2. resolve source path (`args[0]` or default `while.pas`) and call `new Scanner(sourcePath).GetTokens()`
 3. `Parser.SetTokenIterator(tokens)`
 4. `Parser.Parse()`
 5. parser emits `Mepa.txt`
@@ -45,7 +45,7 @@ Use this file as a quick mental map before reading code.
 
 ## Easy-to-break couplings
 
-- hardcoded source filename in `Program.cs`
+- default source filename `while.pas` is resolved relative to current working directory when no CLI argument is provided
 - parser startup grammar requires parameter list in program header
 - `Mepa.txt` output depends on current working directory
 - keyword resource name must match embedded manifest path
@@ -56,4 +56,4 @@ Use this file as a quick mental map before reading code.
 2. inspect `Token.cs` and `TypePascal.cs` for lexical vocabulary
 3. read scanner flow in `Scanner.cs`
 4. read symbol model (`Symbol.cs`, `SymbolTable.cs`)
-5. read parser top-down starting from `parse()`
+5. read parser top-down starting from `Parser.cs` (`parse()`), then continue in the other parser partial files

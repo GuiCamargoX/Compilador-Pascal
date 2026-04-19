@@ -32,7 +32,7 @@ Read:
 
 1. `Compiler/FrontEnd/Semantics/Symbol.cs`
 2. `Compiler/FrontEnd/Semantics/SymbolTable.cs`
-3. `Compiler/FrontEnd/Parser/Parser.cs`
+3. `Compiler/FrontEnd/Parser/Parser.cs` then the remaining parser partial files
 
 Exercise:
 

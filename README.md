@@ -59,7 +59,7 @@ Build from repository root:
 xbuild Compiler.sln /p:Configuration=Debug
 ```
 
-Run from `Compiler/Tests` (important):
+Run with default input from `Compiler/Tests`:
 
 Windows:
 
@@ -73,7 +73,13 @@ Linux/Mono:
 mono ../bin/Debug/Compiler.exe
 ```
 
-Why this directory matters: `Program.cs` currently compiles a hardcoded relative file (`while.pas`).
+`Program.cs` now accepts an optional CLI input path. If no argument is provided, it falls back to `while.pas`.
+
+Optional custom input example (run from repo root):
+
+```bash
+mono Compiler/bin/Debug/Compiler.exe Compiler/Tests/for.pas
+```
 
 ## What to verify after running
 
@@ -91,7 +97,7 @@ Use `Compiler/Tests/*.pas` as primary fixtures for parser validation.
 
 ## Common mistakes beginners hit
 
-- Running the executable outside `Compiler/Tests` (input file not found)
+- Running without an input argument outside `Compiler/Tests` (default `while.pas` not found)
 - Testing with `examples/*.pas` and expecting full parser compatibility (many headers do not match parser startup rule)
 - Expecting comment support (comment handling is currently incomplete)
 
