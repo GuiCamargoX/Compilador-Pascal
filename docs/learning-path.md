@@ -1,18 +1,44 @@
-# Guided Learning Path
+# Guided Learning Path 🧭
 
-Follow this order to learn compiler construction with this repository.
+Welcome! This is your step-by-step study plan if you are new to compilers.
 
-## Stage 1: Understand the pipeline
+You do not need to know compiler theory in advance. Follow the stages in order and run the checkpoints.
 
-Read:
+## Stage 0: Setup and first run ⚙️
+
+Goal: prove the project builds and runs on your machine.
+
+1. Build from repo root:
+
+```bash
+xbuild Compiler.sln /p:Configuration=Debug
+```
+
+2. Run default fixture from `Compiler/Tests`:
+
+```bash
+mono ../bin/Debug/Compiler.exe
+```
+
+Checkpoint:
+
+- token output reaches `TK_EOF`
+- `Mepa.txt` appears/updates in current directory
+
+## Stage 1: Understand the big picture 🧠
+
+Read in this order:
 
 1. `README.md`
 2. `docs/compiler-fundamentals.md`
 3. `docs/architecture-map.md`
+4. `docs/glossary.md`
 
-Goal: understand the end-to-end flow before reading details.
+Checkpoint:
 
-## Stage 2: Learn tokens and scanner behavior
+- you can explain the pipeline: source -> tokens -> parse/semantics -> MEPA
+
+## Stage 2: Learn the lexer (Scanner) 🔎
 
 Read:
 
@@ -21,35 +47,66 @@ Read:
 3. `Compiler/FrontEnd/Lexer/Word.cs`
 4. `Compiler/FrontEnd/Lexer/Scanner.cs`
 
-Exercise:
+Hands-on exercise:
 
-- run with `Compiler/Tests/while.pas`
-- observe token stream in stdout
+1. Run with `Compiler/Tests/while.pas`
+2. Watch token lines in stdout
+3. Pick one line from `while.pas` and map it to emitted tokens
 
-## Stage 3: Learn parser and semantics
+Checkpoint:
+
+- you understand where tokens are emitted (`generateToken(...)`)
+
+## Stage 3: Learn parser + semantic checks 🧩
 
 Read:
 
 1. `Compiler/FrontEnd/Semantics/Symbol.cs`
 2. `Compiler/FrontEnd/Semantics/SymbolTable.cs`
-3. `Compiler/FrontEnd/Parser/Parser.cs` then the remaining parser partial files
+3. `Compiler/FrontEnd/Parser/Parser.cs`
+4. `Compiler/FrontEnd/Parser/Parser.Declarations.cs`
+5. `Compiler/FrontEnd/Parser/Parser.Statements.cs`
+6. `Compiler/FrontEnd/Parser/Parser.Expressions.cs`
 
-Exercise:
+Hands-on exercise:
 
-- trace one statement path (`ifStat`, `whileStat`, or `forStat`)
-- map consumed tokens to generated MEPA operations
+1. Trace `whileStat()` in `Parser.Statements.cs`
+2. Find the MEPA operations emitted for condition and jump
+3. Compare with generated `Mepa.txt`
 
-## Stage 4: Learn type layers
+Checkpoint:
+
+- you understand how parser rules call `GenerateMepa(...)`
+
+## Stage 4: Learn type layers and symbol meaning 🏷️
 
 Read:
 
-- `docs/types-in-this-compiler.md`
+1. `docs/types-in-this-compiler.md`
 
-Exercise:
+Hands-on exercise:
 
-- pick one declaration and trace language type -> token type -> internal semantic type
+1. Trace `var x: integer;`
+2. Follow: language type -> token type -> internal `Parser.TYPE`
+3. Confirm symbol insertion into `SymbolTable`
 
-## Stage 5: Practice extension safely
+Checkpoint:
+
+- you can explain why token type and semantic type are different
+
+## Stage 5: Build confidence by running multiple fixtures 🧪
+
+Run:
+
+- default: `Compiler/Tests/while.pas`
+- explicit CLI input: `Compiler/Tests/for.pas`
+- optional extras: `ifElse.pas`, `repeat.pas`
+
+Checkpoint:
+
+- you can run both default mode and CLI-input mode
+
+## Stage 6: Implement your first tiny feature ✨
 
 Read:
 
@@ -57,8 +114,12 @@ Read:
 2. `docs/build-your-own-compiler.md`
 3. `docs/debugging-checklist.md`
 
-Exercise:
+Suggested first features:
 
-- propose one tiny feature
-- write one fixture
-- implement in small reversible commits
+- new reserved word
+- new operator
+- small parser rule extension
+
+Checkpoint:
+
+- feature added in small commits, with smoke validation after each commit

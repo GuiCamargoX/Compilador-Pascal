@@ -110,6 +110,7 @@ Tip: run `while.pas`, inspect tokens, then inspect `Mepa.txt` immediately after.
 
 - start here: `docs/learning-path.md`
 - concepts: `docs/compiler-fundamentals.md`
+- quick terms: `docs/glossary.md`
 - end-to-end trace with code references: `docs/how-it-works.md`
 - architecture overview: `docs/architecture-map.md`
 - type layers explained: `docs/types-in-this-compiler.md`

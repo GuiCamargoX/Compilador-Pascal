@@ -1,75 +1,150 @@
-# How This Compiler Works
+# How This Compiler Works (Step by Step) 🧩
 
-This document explains the current implementation as it exists in code.
+This guide walks through the real execution flow in code, from input file to MEPA output.
 
-## What is implemented
+If you open files while reading, you will understand the compiler much faster. ✅
 
-- Scanner: reads Pascal source and emits tokens.
-- Parser: validates grammar, performs semantic checks, and emits MEPA instructions.
-- Symbol table: stores variables, procedures, labels, and scope information.
+## 1) Pick the source file 📄
 
-Core wiring:
+Start in `Compiler/Program.cs`:
 
-- `Compiler/Program.cs`
-- `Compiler/FrontEnd/Lexer/Scanner.cs`
-- `Compiler/FrontEnd/Parser/Parser.cs`
-- `Compiler/FrontEnd/Semantics/SymbolTable.cs`
-- `Compiler/Tools/TypePascal.cs`
+- `Main(...)` calls `ResolveSourceFile(args)`
+- if `args[0]` exists, compiler uses it
+- otherwise it falls back to `while.pas`
 
-## Why this design
+Then `Main(...)` creates the scanner and parser pipeline:
 
-- Stages are explicit (`Scanner` -> `Parser` -> output), which makes the compile pipeline easy to follow.
-- Keywords/operators are centralized in `TypePascal`, so token classification rules live in one place.
+1. `new Scanner(sourceFile).GetTokens()`
+2. `Parser.SetTokenIterator(tokens)`
+3. `Parser.Parse()`
 
-## Tradeoffs
+## 2) Turn characters into tokens 🔤
 
-- Good for learning the complete flow in a small codebase.
-- Parser is split by concern into partial files under `Compiler/FrontEnd/Parser/`.
-- Runtime behavior depends on working directory only when no CLI input path is passed.
+Open `Compiler/FrontEnd/Lexer/Scanner.cs`.
 
-## How it works (flow)
+What happens:
 
-1. `Main` resolves input path from `args[0]` when present, otherwise defaults to `while.pas`, then creates `Scanner(...)`.
-2. `Scanner` reads the file as lowercase chars and classifies each char using `TypePascal.Get`.
-3. Tokens are generated and printed to stdout.
-4. `Parser` consumes the token list with `SetTokenIterator(...)` + `Parse()`.
-5. Parser expects `program <id> ( <id> [, <id>]* );` before declarations.
-6. During parse, symbols are inserted/looked up in `SymbolTable`.
-7. Parser writes MEPA instructions to `Mepa.txt` in the current working directory.
+1. file is read in constructor (`Scanner(string namePath)`)
+2. text is converted to lowercase chars
+3. each char goes through `CheckCharacter(...)`
+4. token objects are emitted with `generateToken(...)`
 
-## Correct usage example
+Important helpers:
 
-From repo root:
+- `TypePascal.Get(...)` in `Compiler/Tools/TypePascal.cs` classifies each char
+- `Word` in `Compiler/FrontEnd/Lexer/Word.cs` tracks the current lexeme state
+- `Token` in `Compiler/FrontEnd/Lexer/Token.cs` stores token type/value/position
+
+## 3) Parse the token stream 🧠
+
+Open `Compiler/FrontEnd/Parser/Parser.cs` and parser partial files.
+
+Parser entry:
+
+- `Parse()` delegates to `parse()`
+- parser starts by matching program header:
+  - `program <id> ( <id> [, <id>]* );`
+
+Parser organization:
+
+- `Parser.Declarations.cs`: labels, variables, procedures
+- `Parser.Statements.cs`: `if`, `while`, `for`, assignment, read/write, etc.
+- `Parser.Expressions.cs`: expression grammar (`Expressao`, `Termo`, `Fator`)
+
+Core parser mechanics:
+
+- `match(...)` validates expected token order
+- `getToken()` advances token iterator
+- when parser sees identifiers, it consults symbol table via `SymbolTable.Lookup(...)`
+
+## 4) Semantic checks and symbol tracking 🗂️
+
+Open `Compiler/FrontEnd/Semantics/SymbolTable.cs`.
+
+What this stage does:
+
+- stores identifier metadata (name, kind, scope, address)
+- resolves references through current and outer scopes
+- manages scope stack (`OpenScope`, `CloseScope`)
+
+Where parser uses it:
+
+- declarations call `Insert(...)`
+- statements/expressions call `Lookup(...)`
+
+## 5) Emit MEPA instructions ⚙️
+
+Code generation is done inside parser rules.
+
+Key method:
+
+- `GenerateMepa(label, code, param)` in `Compiler/FrontEnd/Parser/Parser.cs`
+
+Output file:
+
+- opened in `openFileOutput()` as `Mepa.txt`
+- written in current working directory
+
+## 6) Concrete example with real files 🧪
+
+Input fixture:
+
+- `Compiler/Tests/while.pas`
+
+Run (default mode):
 
 ```bash
-xbuild Compiler.sln /p:Configuration=Debug
-```
-
-From `Compiler/Tests`:
-
-```bash
+cd Compiler/Tests
 mono ../bin/Debug/Compiler.exe
 ```
 
-Why `Compiler/Tests`? default mode expects `while.pas` in the current working directory.
+Token output (excerpt):
 
-Optional custom input from repo root:
+```text
+tokenType: TK_PROGRAM  Lexema: program
+tokenType: TK_IDENTIFIER  Lexema: whileprogram
+...
+tokenType: TK_WHILE  Lexema: while
+...
+tokenType: TK_EOF  Lexema: EOF
+```
+
+MEPA output (excerpt from `Compiler/Tests/Mepa.txt`):
+
+```text
+INPP
+AMEM 1
+CRCT 0
+ARMZ 0,0
+...
+DSVF L2
+...
+DMEM 1
+```
+
+Custom input mode:
 
 ```bash
 mono Compiler/bin/Debug/Compiler.exe Compiler/Tests/for.pas
 ```
 
-## Common mistakes
+## 7) Why this design works for learning 🎓
 
-- Running without CLI input outside `Compiler/Tests` (default `while.pas` not found).
-- Using `examples/*.pas` fixtures for parser validation; many headers do not match current parser startup rule.
-- Editing `keywords.txt` without preserving embedded resource loading (`Compiler.Resource.keywords.txt`).
+- pipeline stages are explicit and easy to trace
+- parser rules are visible in one folder and split by concern
+- fixtures in `Compiler/Tests/` let you test one concept at a time
 
-## Safe refactor workflow
+## 8) Common pitfalls (and how to avoid them) 🚨
 
-1. Choose one stage (`Scanner` or `Parser`) and change only that stage.
-2. Rebuild.
-3. Run smoke test with `Compiler/Tests/while.pas`.
-4. Confirm token stream ends at `TK_EOF`.
-5. Confirm `Mepa.txt` is still generated.
-6. Run one additional fixture (`for.pas` or `ifElse.pas`).
+- no CLI argument + wrong working directory -> default `while.pas` not found
+- changing lexer and parser in same commit -> debugging becomes hard
+- using `examples/*.pas` for parser validation -> header mismatch in many cases
+
+## 9) Safe workflow for experiments 🔒
+
+1. change one stage only
+2. run `xbuild Compiler.sln /p:Configuration=Debug`
+3. run default `while.pas` fixture
+4. confirm token output reaches `TK_EOF`
+5. inspect `Mepa.txt`
+6. run one more fixture (for example `for.pas`)
