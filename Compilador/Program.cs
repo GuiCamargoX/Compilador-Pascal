@@ -1,24 +1,18 @@
 ﻿using Compilador.FrontEnd;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Compilador
 {
     class Program
     {
+        private const string DefaultSourceFile = "while.pas";
+
         static void Main(string[] args)
         {
-
-           List<Token> tokenArrayList =  new Scanner("while.pas").getAnalex() ;
-
-           Parser.SetTokenArrayListIterator(tokenArrayList);
-
-           Parser.parse();
-
+            List<Token> tokens = new Scanner(DefaultSourceFile).getAnalex();
+            Parser.SetTokenArrayListIterator(tokens);
+            Parser.parse();
             Console.ReadKey();
         }
     }
