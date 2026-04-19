@@ -1,6 +1,6 @@
-# Architecture Map
+# Architecture Map 🗺️
 
-Use this file as a quick mental map before reading code.
+Use this file as your quick mental map before diving into code.
 
 ## High-level boundaries
 
@@ -24,7 +24,7 @@ Use this file as a quick mental map before reading code.
   - keyword and operator classification tables
   - character categories used by scanner
 
-## Runtime call flow
+## Runtime call flow (in order) 🔄
 
 1. `Program.Main`
 2. resolve source path (`args[0]` or default `while.pas`) and call `new Scanner(sourcePath).GetTokens()`
@@ -32,7 +32,7 @@ Use this file as a quick mental map before reading code.
 4. `Parser.Parse()`
 5. parser emits `Mepa.txt`
 
-## Core data objects
+## Core data objects 📦
 
 - `Token`
   - `TokenType`, `TokenValue`, `LineCol`, `LineRow`
@@ -43,14 +43,14 @@ Use this file as a quick mental map before reading code.
 - `Parser.TYPE`
   - internal semantic categories (`I`, `R`, `B`, `C`, `S`, `P`, `L`, `A`)
 
-## Easy-to-break couplings
+## Easy-to-break couplings ⚠️
 
 - default source filename `while.pas` is resolved relative to current working directory when no CLI argument is provided
 - parser startup grammar requires parameter list in program header
 - `Mepa.txt` output depends on current working directory
 - keyword resource name must match embedded manifest path
 
-## Suggested reading strategy
+## Suggested reading strategy 📚
 
 1. read `Program.cs` to see wiring
 2. inspect `Token.cs` and `TypePascal.cs` for lexical vocabulary

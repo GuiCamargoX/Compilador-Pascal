@@ -1,89 +1,149 @@
-# How to Build a Compiler (Concept Roadmap)
+# Build Your Own Compiler (Beginner Roadmap) 🏗️
 
-This is a language-agnostic roadmap for beginners, connected to this repository.
+This is the "from zero to working compiler" plan.
 
-## 1) Choose your source language subset
+You can use it for any language, and this repository gives concrete examples for each step.
 
-Do not start with a full language.
+## Before you start ✅
 
-- define minimal grammar first
-- include variables, assignment, expressions, conditionals, and loops
+Keep scope small. A tiny working compiler teaches more than a giant unfinished one.
 
-In this repo, the subset includes statements like `if`, `while`, `for`, `repeat`, `case`, and simple procedures.
+Start with:
 
-## 2) Define lexical vocabulary
+- variables
+- assignment
+- arithmetic expressions
+- one loop or condition
 
-Before writing parser rules, define what token kinds exist.
+## Milestone 1: Define your language subset ✍️
 
-- keywords
-- operators
-- identifier and literal rules
+Goal: decide exactly what syntax you support.
 
-In this repo, vocabulary is driven by:
+Do:
 
-- `Compiler/Resource/keywords.txt`
-- `Compiler/Tools/TypePascal.cs`
+1. write 3-5 sample programs
+2. list which statements and expressions are allowed
+3. freeze this list for your first version
 
-## 3) Build scanner (lexer)
+In this repo, that subset includes `if`, `while`, `for`, `repeat`, `case`, and simple procedures.
 
-Input: characters. Output: tokens.
+## Milestone 2: Define tokens (vocabulary) 🔤
 
-Goals:
+Goal: decide what token categories exist.
 
-- split source text into meaningful token units
-- attach source position for debugging
+Do:
 
-In this repo: `Compiler/FrontEnd/Lexer/Scanner.cs`.
+1. list keywords
+2. list operators/symbols
+3. define literal and identifier rules
 
-## 4) Build parser
+In this repo:
 
-Input: tokens. Output: validated structure/logic.
+- keywords source: `Compiler/Resource/keywords.txt`
+- operator and char classification: `Compiler/Tools/TypePascal.cs`
 
-Goals:
+Done when:
 
-- enforce grammar order
-- call semantic checks at key points
+- every language symbol maps to a token type
 
-In this repo: `Compiler/FrontEnd/Parser/Parser.cs`.
+## Milestone 3: Build scanner / lexer 🔎
 
-## 5) Add semantic model
+Goal: convert character stream to token stream.
 
-Parser alone checks form, not meaning.
+Do:
 
-You need symbol tracking:
+1. read source text
+2. classify characters
+3. build lexemes
+4. emit tokens with line/column
 
-- declarations
-- scope levels
-- identifier categories and types
+In this repo:
 
-In this repo: `Compiler/FrontEnd/Semantics/SymbolTable.cs` and `Compiler/FrontEnd/Semantics/Symbol.cs`.
+- scanner: `Compiler/FrontEnd/Lexer/Scanner.cs`
+- token object: `Compiler/FrontEnd/Lexer/Token.cs`
+- temporary lexeme state: `Compiler/FrontEnd/Lexer/Word.cs`
 
-## 6) Generate target representation
+Done when:
 
-After syntax + semantics, emit instructions.
+- token stream ends with `TK_EOF`
 
-- choose target format (bytecode, assembly, IR)
-- map each statement/expression rule to emitted operations
+## Milestone 4: Build parser 🧩
 
-In this repo, the target is MEPA-like text in `Mepa.txt`.
+Goal: validate grammar structure from token stream.
 
-## 7) Validate with tiny fixtures
+Do:
 
-Small test programs are essential.
+1. define parser entry point
+2. implement grammar rules for declarations/statements/expressions
+3. fail fast when token order is invalid
 
-- one fixture per feature
-- one smoke test for full pipeline
+In this repo:
 
-In this repo, start with `Compiler/Tests/while.pas`.
+- entry: `Parse()` in `Compiler/FrontEnd/Parser/Parser.cs`
+- declarations: `Parser.Declarations.cs`
+- statements: `Parser.Statements.cs`
+- expressions: `Parser.Expressions.cs`
 
-## Recommended implementation order for a new compiler
+Done when:
 
-1. literals and identifiers
+- valid programs parse completely
+- invalid programs fail at clear token mismatch points
+
+## Milestone 5: Add semantic checks 🧠
+
+Goal: check meaning (not only syntax).
+
+Do:
+
+1. create symbol table
+2. insert declarations
+3. resolve uses with scope rules
+
+In this repo:
+
+- symbol model: `Compiler/FrontEnd/Semantics/Symbol.cs`
+- symbol table: `Compiler/FrontEnd/Semantics/SymbolTable.cs`
+
+Done when:
+
+- undeclared identifiers are not silently accepted
+
+## Milestone 6: Generate target instructions ⚙️
+
+Goal: emit executable/intermediate representation.
+
+In this repo:
+
+- generation helper: `GenerateMepa(...)`
+- output file: `Mepa.txt`
+
+Done when:
+
+- a valid fixture produces stable instruction output
+
+## Milestone 7: Validate with tiny fixtures 🧪
+
+Use one small file per feature and one smoke test for full flow.
+
+Start with:
+
+- `Compiler/Tests/while.pas`
+
+Smoke checklist:
+
+1. build (`xbuild Compiler.sln /p:Configuration=Debug`)
+2. run default or CLI input mode
+3. confirm `TK_EOF`
+4. inspect `Mepa.txt`
+
+## Suggested implementation order for a brand-new compiler 🪜
+
+1. identifiers + integer literals
 2. arithmetic expressions
-3. assignment statements
+3. assignment
 4. `if/else`
 5. `while`
 6. declarations + symbol table
 7. procedures/scopes
 
-Each step should include one tiny fixture and one expected output check.
+At each step: one fixture, one expected output, one focused commit.

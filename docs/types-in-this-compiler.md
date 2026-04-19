@@ -1,10 +1,12 @@
-# Types in This Compiler
+# Types in This Compiler (No Confusion Edition) 🏷️
 
-The word "type" appears in multiple layers. This document separates them clearly.
+The word "type" appears at different layers.
 
-## 1) Language-level Pascal data types
+This guide helps you separate those layers clearly.
 
-These are source-language concepts used in declarations:
+## Layer 1: Language data types (Pascal source) 📝
+
+These are types a programmer writes in source code:
 
 - `integer`
 - `real`
@@ -13,11 +15,11 @@ These are source-language concepts used in declarations:
 - `string`
 - `array`
 
-Where this mapping is defined:
+Where mapped in code:
 
 - `Compiler/FrontEnd/Parser/Parser.cs` in `STRING_TYPE_HASH_MAP`
 
-## 2) Token types from lexical analysis
+## Layer 2: Token types (lexer output) 🔤
 
 These are categories produced by scanner.
 
@@ -27,14 +29,14 @@ Examples:
 - identifiers/literals: `TK_IDENTIFIER`, `TK_INTLIT`, `TK_BOOLLIT`
 - operators/symbols: `TK_ASSIGNMENT`, `TK_PLUS`, `TK_SEMI_COLON`
 
-Where tokens are configured:
+Where configured:
 
-- keywords from `Compiler/Resource/keywords.txt`
-- operators in `Compiler/Tools/TypePascal.cs`
+- keywords: `Compiler/Resource/keywords.txt`
+- operators + char categories: `Compiler/Tools/TypePascal.cs`
 
-## 3) Internal semantic types (`Parser.TYPE`)
+## Layer 3: Internal semantic types (`Parser.TYPE`) 🧠
 
-Parser uses compact internal enum values:
+Parser uses compact internal values:
 
 - `I` -> integer
 - `R` -> real
@@ -45,11 +47,11 @@ Parser uses compact internal enum values:
 - `L` -> label
 - `A` -> array
 
-Why this exists:
+Why this layer exists:
 
-- semantic checks and symbol table operations can use compact typed values
+- parser and symbol table can reason with compact semantic categories
 
-## Example: how one declaration flows through layers
+## End-to-end example ✨
 
 Source:
 
@@ -57,15 +59,21 @@ Source:
 var x: integer;
 ```
 
-Flow:
+Flow through layers:
 
-1. scanner emits tokens like `TK_VAR`, `TK_IDENTIFIER`, `TK_COLON`, `TK_INTEGER`, `TK_SEMI_COLON`
-2. parser rule `VarDeclarations` consumes these tokens
-3. parser maps `TK_INTEGER` to internal `Parser.TYPE.I`
-4. symbol table stores `x` as variable with type `I` and an address
+1. scanner emits `TK_VAR TK_IDENTIFIER TK_COLON TK_INTEGER TK_SEMI_COLON`
+2. parser (`VarDeclarations` in `Parser.Declarations.cs`) consumes tokens
+3. parser maps `TK_INTEGER` -> `Parser.TYPE.I`
+4. symbol table stores `x` with semantic type `I`
 
-## Common mistakes
+## Quick mental model 🧭
 
-- Confusing token type with language type (for example, `TK_INTEGER` is a token label, not the runtime value)
-- Adding a keyword in `keywords.txt` but forgetting parser rules for the new token
-- Changing internal enum semantics without updating symbol handling and parser branches
+- language type = what user writes
+- token type = what lexer emits
+- semantic type = what compiler reasons with internally
+
+## Common mistakes 🚨
+
+- mixing token names with language types (`TK_INTEGER` is a token label, not a value type)
+- adding keyword token support but skipping parser rule updates
+- changing `Parser.TYPE` meaning without updating symbol-handling logic

@@ -1,84 +1,117 @@
-# How to Implement a New Language Feature
+# Implement a New Feature (Hands-on Workshop) ✨
 
-This guide shows a safe, beginner-friendly workflow for extending this compiler.
+This guide teaches a safe way to extend the compiler without getting lost.
 
-## Goal
+Use it when adding a new keyword, operator, statement, or literal.
 
-Add one language feature at a time with minimal risk.
+## The golden rule 🛡️
 
-Examples of features:
+Change one concept at a time.
 
-- new keyword
-- new statement form
-- new operator
-- new literal kind
+Good:
 
-## Safe implementation steps
+- one feature
+- one fixture
+- small commits
 
-1. Pick one small feature and one fixture.
-2. Update lexical layer if needed.
-3. Update parser rule(s).
-4. Update semantic/symbol logic if required.
-5. Update MEPA generation if behavior should emit code.
-6. Run smoke verification and compare output.
+Bad:
 
-## Detailed checklist
+- many grammar changes in one commit
+- lexer + parser + semantics + refactor all at once
 
-### Step 1: define syntax and scope
+## Step-by-step workflow 🪜
 
-- write one example Pascal snippet using the new feature
-- decide if feature is only syntax, or syntax + semantics + codegen
+### Step 1: Write the feature example first
 
-### Step 2: scanner/token updates (if needed)
+Create a tiny Pascal snippet showing exactly what you want.
 
-- add keyword to `Compiler/Resource/keywords.txt` when introducing new reserved word
-- add operators to `Compiler/Tools/TypePascal.cs` when introducing new symbol/operator
+Example format:
 
-### Step 3: parser updates
+```pascal
+begin
+    <new construct here>
+end.
+```
 
-- add parser branch in `Compiler/FrontEnd/Parser/Parser.cs` where statement/expression should be recognized
-- consume tokens with `match(...)`
-- keep style consistent with existing parser methods
+This snippet becomes your acceptance test.
 
-### Step 4: semantic updates
+### Step 2: Decide where the change belongs
 
-- insert or look up symbols via `SymbolTable` when feature introduces identifiers
-- validate scope/type assumptions explicitly
+Ask:
 
-### Step 5: code generation updates
+- is this only lexical (new symbol/keyword)?
+- does parser need a new rule branch?
+- does semantics need symbol/type checks?
+- does code generation need new MEPA output?
 
-- emit MEPA through `GenerateMepa(...)` in the parser branch that implements feature behavior
+### Step 3: Update lexer layer (if needed)
 
-### Step 6: verification
+Files:
 
-Minimum smoke checks:
+- `Compiler/Resource/keywords.txt` (new reserved words)
+- `Compiler/Tools/TypePascal.cs` (new operators/token mappings)
 
-1. build solution
-2. run from `Compiler/Tests`
-3. confirm token stream reaches `TK_EOF`
-4. confirm `Mepa.txt` updated
-5. compare output before/after for unchanged fixtures
+Goal: scanner emits the token you expect.
 
-## Correct usage example (new keyword)
+### Step 4: Update parser rule dispatch
 
-If you add keyword `foo`:
+Files:
 
-1. add `foo` to `keywords.txt`
-2. parser can now see `TK_FOO`
-3. add parser branch for `TK_FOO`
-4. add fixture that exercises the new branch
+- `Compiler/FrontEnd/Parser/Parser.Statements.cs`
+- `Compiler/FrontEnd/Parser/Parser.Expressions.cs`
+- `Compiler/FrontEnd/Parser/Parser.Declarations.cs`
 
-## Common mistakes
+Goal: parser recognizes the new token sequence and uses `match(...)` correctly.
 
-- Adding parser logic without scanner/token support
-- Adding keyword but forgetting to handle it in parser dispatch
-- Changing multiple features in one commit (hard to debug and review)
-- Breaking startup grammar (`program <id> ( <id> [, <id>]* );`) accidentally
+### Step 5: Add semantic logic (if needed)
 
-## Recommended commit style
+Files:
 
-- Commit 1: scanner/token updates
-- Commit 2: parser + semantic updates
-- Commit 3: docs + fixtures
+- `Compiler/FrontEnd/Semantics/SymbolTable.cs`
+- parser rule where symbol insertion/lookup is required
 
-This keeps refactors reversible and easy to review.
+Goal: declarations/usages are checked with scope awareness.
+
+### Step 6: Add MEPA generation (if behavior changes)
+
+Files:
+
+- parser rule methods + `GenerateMepa(...)`
+
+Goal: compiled output reflects the new construct.
+
+### Step 7: Verify with fixtures
+
+Minimum checks:
+
+1. build: `xbuild Compiler.sln /p:Configuration=Debug`
+2. run default fixture from `Compiler/Tests`
+3. run your explicit feature fixture using CLI arg mode
+4. confirm token stream reaches `TK_EOF`
+5. inspect `Mepa.txt`
+
+## Mini example: adding a new keyword 🧪
+
+Suppose keyword is `foo` (illustrative):
+
+1. add `foo` to `Compiler/Resource/keywords.txt`
+2. scanner now can emit `TK_FOO`
+3. add parser branch for `TK_FOO` in appropriate parser partial file
+4. emit MEPA if needed
+5. add fixture exercising the new construct
+
+## Common mistakes (and fixes) 🚨
+
+- parser branch added, but keyword missing in lexer tables -> add token definition first
+- keyword added, but parser dispatch not updated -> add case in statement/expression/declaration rule
+- changed many features at once -> split into focused commits
+- broke startup grammar accidentally -> re-check `program <id> ( <id> [, <id>]* );`
+
+## Recommended commit sequence ✅
+
+1. scanner/token support
+2. parser recognition
+3. semantic/codegen updates
+4. docs + fixture + verification notes
+
+This sequence keeps changes reviewable and easy to roll back.

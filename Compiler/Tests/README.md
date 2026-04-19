@@ -1,29 +1,50 @@
-# Test Fixtures Guide
+# Test Fixtures Guide 🧪
 
-This folder contains parser-focused Pascal fixtures used as smoke tests.
+This folder contains small Pascal programs used to validate compiler behavior.
 
-## Why these fixtures matter
+## Why this folder is important
 
-`Program.cs` supports optional CLI input. When no input is provided, it defaults to `while.pas`, so this folder is the safest place to run baseline checks.
+- default run mode uses `while.pas` when no CLI argument is passed
+- fixtures here match current parser expectations
+- they are ideal for step-by-step learning and debugging
 
-## Suggested fixture order
+## Recommended fixture order for learners 📚
 
 1. `while.pas` - baseline smoke test
-2. `ifElse.pas` - conditional flow
-3. `for.pas` - iterative flow and assignment updates
-4. `repeat.pas` - post-test loop form
-5. `case.pas` - branch selection
-6. `goto.pas` - label and jump behavior
-7. `procSemPar.pas` - procedure declaration and call
+2. `ifElse.pas` - conditionals
+3. `for.pas` - iterative flow
+4. `repeat.pas` - repeat/until loop
+5. `case.pas` - case branch behavior
+6. `goto.pas` - labels and jumps
+7. `procSemPar.pas` - procedure call/declaration
 
-## Quick smoke workflow
+## How to run
 
-1. build from repo root
-2. run executable from `Compiler/Tests`
-3. verify token stream reaches `TK_EOF`
-4. verify `Mepa.txt` is created/updated
+From repo root:
 
-## Common fixture pitfalls
+```bash
+xbuild Compiler.sln /p:Configuration=Debug
+```
 
-- Many files under `examples/` use program headers that do not match parser startup rule.
-- Keep using this folder for parser validation unless you also adapt parser startup grammar.
+Default fixture mode (run inside this folder):
+
+```bash
+mono ../bin/Debug/Compiler.exe
+```
+
+Explicit fixture mode (run from repo root):
+
+```bash
+mono Compiler/bin/Debug/Compiler.exe Compiler/Tests/for.pas
+```
+
+## What to verify ✅
+
+1. token stream reaches `TK_EOF`
+2. `Mepa.txt` is updated
+3. no parser exception is thrown
+
+## Common pitfalls ⚠️
+
+- using `examples/` files for parser verification (many headers do not match startup grammar)
+- running default mode outside this folder without CLI input path
