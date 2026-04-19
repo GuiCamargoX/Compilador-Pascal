@@ -1,55 +1,65 @@
-# Compilador Pascal (C#)
+# Pascal Compiler in C# (Learning Repository)
 
-Small educational Pascal compiler written in C#.  
-This repository is focused on learning how a compiler is wired end-to-end.
+This repository is a teaching-oriented compiler project. It shows how a compiler can translate a Pascal-like source program into an intermediate instruction format (MEPA).
 
-## What is implemented
+## What is a compiler?
 
-- lexical analysis (scanner) for Pascal-like tokens
-- syntactic + semantic passes over tokens
-- symbol table with scope handling
-- MEPA-like instruction generation into `Mepa.txt`
+A compiler is a program that translates source code from one language into another representation.
 
-Main pipeline:
+- Source language here: Pascal-like syntax (`.pas` files)
+- Target here: MEPA-like instructions written to `Mepa.txt`
 
-1. read Pascal source
-2. tokenize source (`Scanner`)
-3. parse + semantic checks (`Parser` + `SymbolTable`)
+Most compilers are organized as phases. This repository follows that classic structure.
+
+## Compiler types (quick intuition)
+
+- AOT compiler: translates before execution (for example, C/C++ style workflows)
+- Interpreter: executes source directly without generating a separate executable
+- Hybrid compiler: compiles to intermediate representation, then executes/optimizes later
+
+This project is closest to a front-end + intermediate-code compiler used for learning compiler construction.
+
+## What is implemented in this repository
+
+- lexical analysis (`Scanner`) to generate tokens
+- syntax + semantic checks (`Parser` + `SymbolTable`)
+- code generation to MEPA instructions (`Parser.GenerateMepa`)
+
+Current flow:
+
+1. read Pascal source file
+2. tokenize text into `Token` objects
+3. parse grammar and validate declarations/uses
 4. emit MEPA output (`Mepa.txt`)
 
-## Why this design
+## Type systems used here
 
-- The code is separated by compiler stages (`Scanner`, `Parser`, symbol structures) so beginners can study one stage at a time.
-- `Parser` is a single-file grammar implementation, which is not the most modular design, but makes control flow easy to trace while learning.
+There are three different notions of "type" in this codebase:
 
-Tradeoffs:
+1. Pascal data types (language-level): `integer`, `real`, `boolean`, `char`, `string`, `array`
+2. Token types (lexer output): `TK_PROGRAM`, `TK_IDENTIFIER`, `TK_INTLIT`, `TK_ASSIGNMENT`, ...
+3. Internal semantic types (`Parser.TYPE`): `I`, `R`, `B`, `C`, `S`, `P`, `L`, `A`
 
-- Easy to follow for study.
-- Harder to maintain as grammar grows because many parser rules live in one file.
+See `docs/types-in-this-compiler.md` for a beginner-friendly mapping.
 
-## Project shape
+## Project structure
 
-- Solution: `Compilador.sln`
-- Main project: `Compilador/Compilador.csproj` (.NET Framework 4.6.1)
-- Entrypoint: `Compilador/Program.cs`
-- Core compiler code: `Compilador/FrontEnd/`
-- Token metadata: `Compilador/Tools/TypePascal.cs` + `Compilador/Resource/keywords.txt`
+- solution: `Compilador.sln`
+- project: `Compilador/Compilador.csproj` (.NET Framework 4.6.1)
+- entrypoint: `Compilador/Program.cs`
+- front-end compiler code: `Compilador/FrontEnd/`
+- keyword/operator configuration: `Compilador/Tools/TypePascal.cs`
+- embedded keyword list: `Compilador/Resource/keywords.txt`
 
-## Build and run
+## Build and run (exact commands)
 
-### 1) Build
-
-From repository root:
+Build from repository root:
 
 ```bash
 msbuild Compilador.sln /p:Configuration=Debug
 ```
 
-### 2) Run (current behavior)
-
-Important: `Program.cs` currently compiles a hardcoded file, `while.pas`.
-
-Run from `Compilador/Testes` so that `while.pas` is found:
+Run from `Compilador/Testes` (important):
 
 Windows:
 
@@ -57,45 +67,46 @@ Windows:
 ..\bin\Debug\Compilador.exe
 ```
 
-Linux (Mono):
+Linux/Mono:
 
 ```bash
 mono ../bin/Debug/Compilador.exe
 ```
 
-### 3) Check output
+Why this directory matters: `Program.cs` currently compiles a hardcoded relative file (`while.pas`).
 
-- token stream is printed to stdout during scanning
-- generated MEPA is written to `Mepa.txt` in the current working directory
+## What to verify after running
 
-## Correct usage examples
+- token stream is printed to stdout
+- final token includes `TK_EOF`
+- `Mepa.txt` is generated/updated in the current working directory
 
-- Good input fixture: `Compilador/Testes/while.pas`
-- Other focused fixtures: `Compilador/Testes/for.pas`, `Compilador/Testes/ifElse.pas`, `Compilador/Testes/procSemPar.pas`
+## Supported subset (practical view)
 
-## Common mistakes
+- declarations: `label`, `var`, `procedure`
+- commands: assignment, `if/else`, `while`, `repeat/until`, `for`, `case`, `goto`, `read`, `write`
+- expressions: arithmetic, relational, and boolean operators
 
-- Running from the wrong directory (compiler cannot find `while.pas`).
-- Editing files under `examples/` and expecting parser parity. Many `examples/*.pas` headers do not match current parser expectations.
-- Expecting comments to work. Comment handling is currently incomplete.
+Use `Compilador/Testes/*.pas` as primary fixtures for parser validation.
 
-## Safe refactor workflow (for beginners)
+## Common mistakes beginners hit
 
-1. Change one compiler stage at a time (scanner or parser, not both).
-2. Rebuild.
-3. Run with `Compilador/Testes/while.pas` smoke test.
-4. Compare token stream and `Mepa.txt` before and after.
-5. Only then move to a second fixture like `for.pas` or `ifElse.pas`.
+- Running the executable outside `Compilador/Testes` (input file not found)
+- Testing with `examples/*.pas` and expecting full parser compatibility (many headers do not match parser startup rule)
+- Expecting comment support (comment handling is currently incomplete)
 
-## Debugging checklist
+## Safe refactor workflow
 
-- Build succeeds for `Compilador.sln`.
-- The executable is launched from `Compilador/Testes`.
-- Scanner reaches `TK_EOF`.
-- Parser does not throw in `match(...)`.
-- `Mepa.txt` is created and updated on each run.
+1. modify one compiler phase at a time
+2. rebuild
+3. run `while.pas` smoke test
+4. inspect stdout token stream and `Mepa.txt`
+5. validate with one extra fixture (`for.pas`, `ifElse.pas`)
 
-## Learn more
+## Learning path
 
-- Architecture walkthrough: `docs/how-it-works.md`
-- Practical debugging guide: `docs/debugging-checklist.md`
+1. read `docs/compiler-fundamentals.md`
+2. read `docs/how-it-works.md`
+3. read `docs/types-in-this-compiler.md`
+4. follow `docs/implement-new-feature.md`
+5. use `docs/debugging-checklist.md` while changing code
