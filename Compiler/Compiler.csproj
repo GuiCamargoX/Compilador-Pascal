@@ -43,6 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FrontEnd\Parser\Parser.cs" />
+    <Compile Include="FrontEnd\Parser\Parser.Declarations.cs" />
+    <Compile Include="FrontEnd\Parser\Parser.Statements.cs" />
+    <Compile Include="FrontEnd\Parser\Parser.Expressions.cs" />
     <Compile Include="FrontEnd\Parser\ParserAux.cs" />
     <Compile Include="FrontEnd\Semantics\Symbol.cs" />
     <Compile Include="FrontEnd\Semantics\SymbolTable.cs" />
