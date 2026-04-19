@@ -109,5 +109,7 @@ Use `Compilador/Testes/*.pas` as primary fixtures for parser validation.
 2. read `docs/architecture-map.md`
 3. read `docs/how-it-works.md`
 4. read `docs/types-in-this-compiler.md`
-5. follow `docs/implement-new-feature.md`
-6. use `docs/debugging-checklist.md` while changing code
+5. read `docs/learning-path.md`
+6. follow `docs/implement-new-feature.md`
+7. read `docs/build-your-own-compiler.md`
+8. use `docs/debugging-checklist.md` while changing code
