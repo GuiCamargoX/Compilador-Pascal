@@ -44,33 +44,33 @@ See `docs/types-in-this-compiler.md` for a beginner-friendly mapping.
 
 ## Project structure
 
-- solution: `Compilador.sln`
-- project: `Compilador/Compilador.csproj` (.NET Framework 4.6.1)
-- entrypoint: `Compilador/Program.cs`
-- front-end compiler code: `Compilador/FrontEnd/`
-- keyword/operator configuration: `Compilador/Tools/TypePascal.cs`
-- embedded keyword list: `Compilador/Resource/keywords.txt`
+- solution: `Compiler.sln`
+- project: `Compiler/Compiler.csproj` (.NET Framework 4.6.1)
+- entrypoint: `Compiler/Program.cs`
+- front-end compiler code: `Compiler/FrontEnd/`
+- keyword/operator configuration: `Compiler/Tools/TypePascal.cs`
+- embedded keyword list: `Compiler/Resource/keywords.txt`
 
 ## Build and run (exact commands)
 
 Build from repository root:
 
 ```bash
-msbuild Compilador.sln /p:Configuration=Debug
+xbuild Compiler.sln /p:Configuration=Debug
 ```
 
-Run from `Compilador/Testes` (important):
+Run from `Compiler/Tests` (important):
 
 Windows:
 
 ```bat
-..\bin\Debug\Compilador.exe
+..\bin\Debug\Compiler.exe
 ```
 
 Linux/Mono:
 
 ```bash
-mono ../bin/Debug/Compilador.exe
+mono ../bin/Debug/Compiler.exe
 ```
 
 Why this directory matters: `Program.cs` currently compiles a hardcoded relative file (`while.pas`).
@@ -87,11 +87,11 @@ Why this directory matters: `Program.cs` currently compiles a hardcoded relative
 - commands: assignment, `if/else`, `while`, `repeat/until`, `for`, `case`, `goto`, `read`, `write`
 - expressions: arithmetic, relational, and boolean operators
 
-Use `Compilador/Testes/*.pas` as primary fixtures for parser validation.
+Use `Compiler/Tests/*.pas` as primary fixtures for parser validation.
 
 ## Common mistakes beginners hit
 
-- Running the executable outside `Compilador/Testes` (input file not found)
+- Running the executable outside `Compiler/Tests` (input file not found)
 - Testing with `examples/*.pas` and expecting full parser compatibility (many headers do not match parser startup rule)
 - Expecting comment support (comment handling is currently incomplete)
 

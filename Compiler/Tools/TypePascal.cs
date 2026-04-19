@@ -7,7 +7,7 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 
-namespace Compilador.Tools
+namespace Compiler.Tools
 {
     class TypePascal
     {
@@ -29,7 +29,7 @@ namespace Compilador.Tools
             String word;
 
             Assembly _assembly = Assembly.GetExecutingAssembly();//adicionando Recurso
-            using (TextReader leitor = new StreamReader(_assembly.GetManifestResourceStream("Compilador.Resource.keywords.txt")) )
+            using (TextReader leitor = new StreamReader(_assembly.GetManifestResourceStream("Compiler.Resource.keywords.txt")) )
             {
                 word = leitor.ReadLine();
                 while (word != null)

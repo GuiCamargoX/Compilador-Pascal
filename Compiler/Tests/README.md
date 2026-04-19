@@ -19,7 +19,7 @@ This folder contains parser-focused Pascal fixtures used as smoke tests.
 ## Quick smoke workflow
 
 1. build from repo root
-2. run executable from `Compilador/Testes`
+2. run executable from `Compiler/Tests`
 3. verify token stream reaches `TK_EOF`
 4. verify `Mepa.txt` is created/updated
 

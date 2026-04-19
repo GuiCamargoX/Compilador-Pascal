@@ -31,12 +31,12 @@ Examples of features:
 
 ### Step 2: scanner/token updates (if needed)
 
-- add keyword to `Compilador/Resource/keywords.txt` when introducing new reserved word
-- add operators to `Compilador/Tools/TypePascal.cs` when introducing new symbol/operator
+- add keyword to `Compiler/Resource/keywords.txt` when introducing new reserved word
+- add operators to `Compiler/Tools/TypePascal.cs` when introducing new symbol/operator
 
 ### Step 3: parser updates
 
-- add parser branch in `Compilador/FrontEnd/Parser.cs` where statement/expression should be recognized
+- add parser branch in `Compiler/FrontEnd/Parser.cs` where statement/expression should be recognized
 - consume tokens with `match(...)`
 - keep style consistent with existing parser methods
 
@@ -54,7 +54,7 @@ Examples of features:
 Minimum smoke checks:
 
 1. build solution
-2. run from `Compilador/Testes`
+2. run from `Compiler/Tests`
 3. confirm token stream reaches `TK_EOF`
 4. confirm `Mepa.txt` updated
 5. compare output before/after for unchanged fixtures

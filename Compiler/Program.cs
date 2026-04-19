@@ -1,8 +1,8 @@
-﻿using Compilador.FrontEnd;
+﻿using Compiler.FrontEnd;
 using System;
 using System.Collections.Generic;
 
-namespace Compilador
+namespace Compiler
 {
     class Program
     {

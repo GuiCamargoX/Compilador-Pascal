@@ -22,19 +22,19 @@ In this repository:
 ## Core phases in practice
 
 1. Lexical analysis (scanner)
-   - file: `Compilador/FrontEnd/Scanner.cs`
+   - file: `Compiler/FrontEnd/Scanner.cs`
    - role: convert characters into token stream
 
 2. Syntax analysis (parser)
-   - file: `Compilador/FrontEnd/Parser.cs`
+   - file: `Compiler/FrontEnd/Parser.cs`
    - role: check token order follows grammar rules
 
 3. Semantic checks
-   - files: `Compilador/FrontEnd/Parser.cs`, `Compilador/FrontEnd/SymbolTable.cs`
+   - files: `Compiler/FrontEnd/Parser.cs`, `Compiler/FrontEnd/SymbolTable.cs`
    - role: verify declarations, uses, scope, and typing context
 
 4. Intermediate code generation
-   - file: `Compilador/FrontEnd/Parser.cs`
+   - file: `Compiler/FrontEnd/Parser.cs`
    - role: write MEPA-like instructions to `Mepa.txt`
 
 ## Why tokens matter
@@ -68,10 +68,10 @@ Without this table, the parser could read syntax but could not validate meaning.
 
 ## Read-order recommendation for beginners
 
-1. `Compilador/Program.cs`
-2. `Compilador/FrontEnd/Token.cs`
-3. `Compilador/Tools/TypePascal.cs`
-4. `Compilador/FrontEnd/Scanner.cs`
-5. `Compilador/FrontEnd/Symbol.cs`
-6. `Compilador/FrontEnd/SymbolTable.cs`
-7. `Compilador/FrontEnd/Parser.cs`
+1. `Compiler/Program.cs`
+2. `Compiler/FrontEnd/Token.cs`
+3. `Compiler/Tools/TypePascal.cs`
+4. `Compiler/FrontEnd/Scanner.cs`
+5. `Compiler/FrontEnd/Symbol.cs`
+6. `Compiler/FrontEnd/SymbolTable.cs`
+7. `Compiler/FrontEnd/Parser.cs`

@@ -4,23 +4,23 @@ Use this file as a quick mental map before reading code.
 
 ## High-level boundaries
 
-- `Compilador/Program.cs`
+- `Compiler/Program.cs`
   - application entrypoint
   - wires scanner output into parser input
 
-- `Compilador/FrontEnd/Scanner.cs`
+- `Compiler/FrontEnd/Scanner.cs`
   - lexical analysis (characters -> tokens)
 
-- `Compilador/FrontEnd/Parser.cs`
+- `Compiler/FrontEnd/Parser.cs`
   - grammar rules
   - semantic checks
   - MEPA code emission
 
-- `Compilador/FrontEnd/SymbolTable.cs` and `Compilador/FrontEnd/Symbol.cs`
+- `Compiler/FrontEnd/SymbolTable.cs` and `Compiler/FrontEnd/Symbol.cs`
   - identifier metadata
   - scope stack behavior
 
-- `Compilador/Tools/TypePascal.cs`
+- `Compiler/Tools/TypePascal.cs`
   - keyword and operator classification tables
   - character categories used by scanner
 

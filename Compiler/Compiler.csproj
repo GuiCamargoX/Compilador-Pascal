@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{A04E3C23-33B0-4E92-8E12-BEE562F8041C}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Compilador</RootNamespace>
-    <AssemblyName>Compilador</AssemblyName>
+    <RootNamespace>Compiler</RootNamespace>
+    <AssemblyName>Compiler</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -55,11 +55,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Testes\for.pas" />
-    <None Include="Testes\goto.pas" />
-    <None Include="Testes\ifElse.pas" />
-    <None Include="Testes\repeat.pas" />
-    <None Include="Testes\while.pas" />
+    <None Include="Tests\for.pas" />
+    <None Include="Tests\goto.pas" />
+    <None Include="Tests\ifElse.pas" />
+    <None Include="Tests\repeat.pas" />
+    <None Include="Tests\while.pas" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resource\keywords.txt" />

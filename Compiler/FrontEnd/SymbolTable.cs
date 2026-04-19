@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compilador.FrontEnd
+namespace Compiler.FrontEnd
 {
     public class SymbolTable
     {

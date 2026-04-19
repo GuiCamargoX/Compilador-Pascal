@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Compilador.Tools;
+using Compiler.Tools;
 
-namespace Compilador.FrontEnd
+namespace Compiler.FrontEnd
 {
     class Scanner
     {

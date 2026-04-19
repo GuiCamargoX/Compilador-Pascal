@@ -16,23 +16,23 @@ Goal: understand the end-to-end flow before reading details.
 
 Read:
 
-1. `Compilador/Tools/TypePascal.cs`
-2. `Compilador/FrontEnd/Token.cs`
-3. `Compilador/FrontEnd/Word.cs`
-4. `Compilador/FrontEnd/Scanner.cs`
+1. `Compiler/Tools/TypePascal.cs`
+2. `Compiler/FrontEnd/Token.cs`
+3. `Compiler/FrontEnd/Word.cs`
+4. `Compiler/FrontEnd/Scanner.cs`
 
 Exercise:
 
-- run with `Compilador/Testes/while.pas`
+- run with `Compiler/Tests/while.pas`
 - observe token stream in stdout
 
 ## Stage 3: Learn parser and semantics
 
 Read:
 
-1. `Compilador/FrontEnd/Symbol.cs`
-2. `Compilador/FrontEnd/SymbolTable.cs`
-3. `Compilador/FrontEnd/Parser.cs`
+1. `Compiler/FrontEnd/Symbol.cs`
+2. `Compiler/FrontEnd/SymbolTable.cs`
+3. `Compiler/FrontEnd/Parser.cs`
 
 Exercise:
 

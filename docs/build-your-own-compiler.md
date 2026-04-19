@@ -21,8 +21,8 @@ Before writing parser rules, define what token kinds exist.
 
 In this repo, vocabulary is driven by:
 
-- `Compilador/Resource/keywords.txt`
-- `Compilador/Tools/TypePascal.cs`
+- `Compiler/Resource/keywords.txt`
+- `Compiler/Tools/TypePascal.cs`
 
 ## 3) Build scanner (lexer)
 
@@ -33,7 +33,7 @@ Goals:
 - split source text into meaningful token units
 - attach source position for debugging
 
-In this repo: `Compilador/FrontEnd/Scanner.cs`.
+In this repo: `Compiler/FrontEnd/Scanner.cs`.
 
 ## 4) Build parser
 
@@ -44,7 +44,7 @@ Goals:
 - enforce grammar order
 - call semantic checks at key points
 
-In this repo: `Compilador/FrontEnd/Parser.cs`.
+In this repo: `Compiler/FrontEnd/Parser.cs`.
 
 ## 5) Add semantic model
 
@@ -56,7 +56,7 @@ You need symbol tracking:
 - scope levels
 - identifier categories and types
 
-In this repo: `Compilador/FrontEnd/SymbolTable.cs` and `Compilador/FrontEnd/Symbol.cs`.
+In this repo: `Compiler/FrontEnd/SymbolTable.cs` and `Compiler/FrontEnd/Symbol.cs`.
 
 ## 6) Generate target representation
 
@@ -74,7 +74,7 @@ Small test programs are essential.
 - one fixture per feature
 - one smoke test for full pipeline
 
-In this repo, start with `Compilador/Testes/while.pas`.
+In this repo, start with `Compiler/Tests/while.pas`.
 
 ## Recommended implementation order for a new compiler
 

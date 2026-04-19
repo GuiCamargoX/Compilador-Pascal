@@ -15,7 +15,7 @@ These are source-language concepts used in declarations:
 
 Where this mapping is defined:
 
-- `Compilador/FrontEnd/Parser.cs` in `STRING_TYPE_HASH_MAP`
+- `Compiler/FrontEnd/Parser.cs` in `STRING_TYPE_HASH_MAP`
 
 ## 2) Token types from lexical analysis
 
@@ -29,8 +29,8 @@ Examples:
 
 Where tokens are configured:
 
-- keywords from `Compilador/Resource/keywords.txt`
-- operators in `Compilador/Tools/TypePascal.cs`
+- keywords from `Compiler/Resource/keywords.txt`
+- operators in `Compiler/Tools/TypePascal.cs`
 
 ## 3) Internal semantic types (`Parser.TYPE`)
 

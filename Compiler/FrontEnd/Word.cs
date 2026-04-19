@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Compilador.FrontEnd
+namespace Compiler.FrontEnd
 {
     static class Word //word= sequencia de caracters do alafabeto , classe auxilio para juntar os caracters em uma string 
     {
