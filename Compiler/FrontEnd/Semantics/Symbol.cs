@@ -46,6 +46,12 @@ namespace Compiler.FrontEnd
             return dataType;
         }
 
+        public int ScopeLevel
+        {
+            get { return nivel_corrente; }
+            set { nivel_corrente = value; }
+        }
+
         public int getAddress()
         {
             return address;

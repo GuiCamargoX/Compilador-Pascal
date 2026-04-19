@@ -117,8 +117,8 @@ namespace Compiler.FrontEnd
             }
 
             comando_Begin();
-            if (Int32.Parse(SymbolTable.getQteVariaveis()) > 0)
-                GenerateMepa("", "DMEM", SymbolTable.getQteVariaveis());
+            if (Int32.Parse(SymbolTable.GetVariableCount()) > 0)
+                GenerateMepa("", "DMEM", SymbolTable.GetVariableCount());
 
         }
 
@@ -189,7 +189,7 @@ namespace Compiler.FrontEnd
 
         public static void procedureStat()
         {
-            Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
+            Symbol symbol = SymbolTable.Lookup(currentToken.TokenValue);
             match("TK_A_PROC");
             Encoding u8 = Encoding.UTF8;
             byte[] bytes = BitConverter.GetBytes(symbol.getAddress());
@@ -200,19 +200,19 @@ namespace Compiler.FrontEnd
 
         public static void labelStat() {
 
-            Symbol symbol = SymbolTable.Busca( currentToken.TokenValue );
+            Symbol symbol = SymbolTable.Lookup( currentToken.TokenValue );
 
             Encoding u8 = Encoding.UTF8;
             byte[] bytes = BitConverter.GetBytes( symbol.getAddress() );
             string l1 = u8.GetString(bytes);
 
 
-            if (SymbolTable.nivel_corrente != symbol.nivel_corrente)
+            if (SymbolTable.CurrentScopeLevel != symbol.ScopeLevel)
                 new Exception("Error: Goto statements aren't allowed between different procedures");
 
             currentToken.TokenType = symbol.getTokenType();
 
-            GenerateMepa(l1.Trim(), "ENRT", symbol.nivel_corrente + "," + SymbolTable.getQteVariaveis()); //Posição ao qual o GOTO TEM QUE SE REFERIR através de L1
+            GenerateMepa(l1.Trim(), "ENRT", symbol.ScopeLevel + "," + SymbolTable.GetVariableCount()); //Posição ao qual o GOTO TEM QUE SE REFERIR através de L1
                                                                                                    //Precisa guardar esse 11 e esse  nivel atual junto com o numero da label na tabela   
             match("TK_A_LABEL");
             match("TK_COLON");
@@ -224,7 +224,7 @@ namespace Compiler.FrontEnd
             Symbol exp;
             String l1 = null;
             match("TK_CASE");
-            exp = SymbolTable.Busca(currentToken.TokenValue);
+            exp = SymbolTable.Lookup(currentToken.TokenValue);
             String valor;
             Expressao();
             match("TK_OF");
@@ -250,7 +250,7 @@ namespace Compiler.FrontEnd
                     if ("TK_COLON".Equals(currentToken.TokenType))
                     {
                         match("TK_COLON");
-                        GenerateMepa("", "CRVL", exp.nivel_corrente + "," + exp.getAddress());
+                        GenerateMepa("", "CRVL", exp.ScopeLevel + "," + exp.getAddress());
                         GenerateMepa("", "CRCT", valor);
                         GenerateMepa("", "CMIG", "");
                         GenerateMepa("", "DSVF", l1);
@@ -278,10 +278,10 @@ namespace Compiler.FrontEnd
             Symbol symbol;
 
             match("TK_GOTO");
-            symbol = SymbolTable.Busca(currentToken.TokenValue);
+            symbol = SymbolTable.Lookup(currentToken.TokenValue);
             currentToken.TokenType = symbol.getTokenType();
 
-            if (SymbolTable.nivel_corrente != symbol.nivel_corrente)
+            if (SymbolTable.CurrentScopeLevel != symbol.ScopeLevel)
                 new Exception("Error: Goto statements aren't allowed between different procedures");
 
             Encoding u8 = Encoding.UTF8;
@@ -289,7 +289,7 @@ namespace Compiler.FrontEnd
             string l1 = u8.GetString(bytes);
 
             //precisa por o rotulo do simbolo, o nivel do simbolo e o nivel atual como parametros
-            GenerateMepa("", "DSVR", l1 + "," + symbol.nivel_corrente + "," + SymbolTable.nivel_corrente );
+            GenerateMepa("", "DSVR", l1 + "," + symbol.ScopeLevel + "," + SymbolTable.CurrentScopeLevel );
 
             match("TK_A_LABEL");
         }
@@ -345,10 +345,10 @@ namespace Compiler.FrontEnd
             l2 = Next_Label();
 
             match("TK_FOR");
-            vaiden = SymbolTable.Busca(currentToken.TokenValue);/*guardando o simbolo da variavel k*/
+            vaiden = SymbolTable.Lookup(currentToken.TokenValue);/*guardando o simbolo da variavel k*/
             statements(); //ex k:=1
             GenerateMepa(l2, "NADA", "");
-            GenerateMepa("", "CRVL", vaiden.nivel_corrente + "," + vaiden.getAddress());
+            GenerateMepa("", "CRVL", vaiden.ScopeLevel + "," + vaiden.getAddress());
 
             if ("TK_TO".Equals(currentToken.TokenType))
             {
@@ -366,12 +366,12 @@ namespace Compiler.FrontEnd
 
             //Faz o que é pedido dentro do begin-end
             match("TK_DO");
-            SymbolTable.openScope();
+            SymbolTable.OpenScope();
             
             statements();
 
             // K++ / K--
-            GenerateMepa("", "CRVL", vaiden.nivel_corrente + "," + vaiden.getAddress());
+            GenerateMepa("", "CRVL", vaiden.ScopeLevel + "," + vaiden.getAddress());
             GenerateMepa("", "CRCT", "1");
 
             if (inc)
@@ -379,11 +379,11 @@ namespace Compiler.FrontEnd
             else
                 GenerateMepa("", "SUBT", "");
 
-            GenerateMepa("", "ARMZ", vaiden.nivel_corrente + "," + vaiden.getAddress());
+            GenerateMepa("", "ARMZ", vaiden.ScopeLevel + "," + vaiden.getAddress());
             GenerateMepa("", "DSVS", l2);//volta a ver a condição
 
 
-            SymbolTable.closeScope();
+            SymbolTable.CloseScope();
             GenerateMepa(l1, "NADA", ""); //Saiu do for
 
         } 
@@ -415,7 +415,7 @@ namespace Compiler.FrontEnd
 
         public static void assignmentStat()
         {
-            Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
+            Symbol symbol = SymbolTable.Lookup(currentToken.TokenValue);
             infipo();
 
             match("TK_VAIDEN");
@@ -425,7 +425,7 @@ namespace Compiler.FrontEnd
 
             if (symbol != null)
             {
-                GenerateMepa( "","ARMZ",symbol.nivel_corrente+","+ symbol.getAddress().ToString() );
+                GenerateMepa( "","ARMZ",symbol.ScopeLevel+","+ symbol.getAddress().ToString() );
             }
 
         }
@@ -465,18 +465,18 @@ namespace Compiler.FrontEnd
 
             match("TK_OPEN_PARENTHESIS");
 
-            symbol = SymbolTable.Busca(currentToken.TokenValue);
+            symbol = SymbolTable.Lookup(currentToken.TokenValue);
             match(symbol.getTokenType());
             GenerateMepa("", "LEIT", "");
-            GenerateMepa("", "ARMZ", symbol.nivel_corrente + "," + symbol.getAddress().ToString());
+            GenerateMepa("", "ARMZ", symbol.ScopeLevel + "," + symbol.getAddress().ToString());
 
             while ("TK_COMMA".Equals(currentToken.TokenType))
             {
                 match("TK_COMMA");
-                symbol = SymbolTable.Busca(currentToken.TokenValue);
+                symbol = SymbolTable.Lookup(currentToken.TokenValue);
                 match(symbol.getTokenType());
                 GenerateMepa("", "LEIT", "");
-                GenerateMepa("", "ARMZ", symbol.nivel_corrente + "," + symbol.getAddress().ToString());
+                GenerateMepa("", "ARMZ", symbol.ScopeLevel + "," + symbol.getAddress().ToString());
             }
             match("TK_CLOSE_PARENTHESIS");
 
@@ -611,9 +611,9 @@ namespace Compiler.FrontEnd
                 switch (currentToken.TokenType)
                 {
                     case "TK_VAIDEN":
-                        Symbol symbol = SymbolTable.Busca(currentToken.TokenValue);
+                        Symbol symbol = SymbolTable.Lookup(currentToken.TokenValue);
                         infipo();
-                        GenerateMepa("", "CRVL", symbol.nivel_corrente.ToString() + "," + symbol.getAddress().ToString());
+                        GenerateMepa("", "CRVL", symbol.ScopeLevel.ToString() + "," + symbol.getAddress().ToString());
                         match("TK_VAIDEN");
 
                         break;
@@ -693,9 +693,9 @@ namespace Compiler.FrontEnd
                             TYPE.L,
                             BitConverter.ToInt16(u8.GetBytes(l1),0) );
 
-                    if (SymbolTable.Busca(label.TokenValue) == null)
+                    if (SymbolTable.Lookup(label.TokenValue) == null)
                     {
-                        SymbolTable.Insere(symbol);
+                        SymbolTable.Insert(symbol);
                     }
                 }
 
@@ -750,13 +750,13 @@ namespace Compiler.FrontEnd
                     dp++;
 
 
-                    if (SymbolTable.Busca( var.TokenValue ) == null)
+                    if (SymbolTable.Lookup( var.TokenValue ) == null)
                     {
-                        SymbolTable.Insere(symbol);
+                        SymbolTable.Insert(symbol);
                     }
                 }
 
-                SymbolTable.setQteVariaveis( variablesArrayList.Count.ToString() ) ;
+                SymbolTable.SetVariableCount( variablesArrayList.Count.ToString() ) ;
                 GenerateMepa( "","AMEM", variablesArrayList.Count.ToString() );
 
                 match("TK_SEMI_COLON");
@@ -789,21 +789,21 @@ namespace Compiler.FrontEnd
                 Encoding u8 = Encoding.UTF8;
                 Symbol symbol = new Symbol(procedureName, "TK_A_PROC", TYPE.P, BitConverter.ToInt16(u8.GetBytes(l2), 0) );
 
-                if (SymbolTable.Busca(procedureName) == null)
+                if (SymbolTable.Lookup(procedureName) == null)
                 {
-                    SymbolTable.Insere(symbol);
+                    SymbolTable.Insert(symbol);
                 }
 
-                SymbolTable.openScope();
-                GenerateMepa(l2, "ENPR", SymbolTable.nivel_corrente.ToString() );
+                SymbolTable.OpenScope();
+                GenerateMepa(l2, "ENPR", SymbolTable.CurrentScopeLevel.ToString() );
 
                 // body
                 block();
 
                 // hole to return the procedure
-                GenerateMepa("", "RTPR", SymbolTable.nivel_corrente.ToString() +","+ SymbolTable.getQteVariaveis() );
+                GenerateMepa("", "RTPR", SymbolTable.CurrentScopeLevel.ToString() +","+ SymbolTable.GetVariableCount() );
                 GenerateMepa(l1, "NADA","");
-                SymbolTable.closeScope();
+                SymbolTable.CloseScope();
                 match("TK_SEMI_COLON");
             }
         }
@@ -879,7 +879,7 @@ namespace Compiler.FrontEnd
 
                 if ("TK_IDENTIFIER".Equals(currentToken.TokenType))
                 {
-                    symb = SymbolTable.Busca(currentToken.TokenValue);
+                    symb = SymbolTable.Lookup(currentToken.TokenValue);
 
                     if (symb != null)
                         currentToken.TokenType = symb.getTokenType();

@@ -18,12 +18,22 @@ namespace Compiler.FrontEnd
         public static int nivel_corrente{ get; private set; } = 0;
         private static string[] QteVarScope = new string[100] ;
 
+        public static int CurrentScopeLevel
+        {
+            get { return nivel_corrente; }
+        }
+
         public static void Insere(Symbol symbol)
         {
             symbol.nivel_corrente = nivel_corrente;
 
             headerScope.symbolTable[symbol.getName()] = symbol;
    
+        }
+
+        public static void Insert(Symbol symbol)
+        {
+            Insere(symbol);
         }
 
         public static Symbol Busca(String symbolName)
@@ -45,6 +55,11 @@ namespace Compiler.FrontEnd
             return null;
         }
 
+        public static Symbol Lookup(string symbolName)
+        {
+            return Busca(symbolName);
+        }
+
         public static void openScope()
         {
             Scope innerScope = new Scope();
@@ -59,10 +74,20 @@ namespace Compiler.FrontEnd
             headerScope = innerScope;
         }
 
+        public static void OpenScope()
+        {
+            openScope();
+        }
+
         public static void closeScope()
         {
             headerScope = headerScope.next;
             nivel_corrente--;
+        }
+
+        public static void CloseScope()
+        {
+            closeScope();
         }
 
         public static Scope getHeaderScope()
@@ -74,8 +99,18 @@ namespace Compiler.FrontEnd
             QteVarScope[nivel_corrente] = n; 
         }
 
+        public static void SetVariableCount(string count)
+        {
+            setQteVariaveis(count);
+        }
+
         public static string getQteVariaveis() {
             return QteVarScope[nivel_corrente];
+        }
+
+        public static string GetVariableCount()
+        {
+            return getQteVariaveis();
         }
 
     }
